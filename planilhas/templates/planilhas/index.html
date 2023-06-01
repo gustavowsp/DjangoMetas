@@ -1,0 +1,145 @@
+{% extends 'global/base.html' %}
+{% load static %}
+
+{% block 'title' %}Importador De Metas{% endblock 'title' %}teste
+
+
+
+{% block 'css' %}
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+{% endblock 'css' %}
+
+
+{% block 'body' %}
+
+    <!-- Container Do conteúdo do site-->
+    <div class="container" >
+        
+        <!-- Caixa de introdução -->
+        <article class="row" id="BoxIntroduct">
+            
+
+
+            <!-- Introdução texto -->
+            <div class="col-md-6 col-12 d-flex justify-content-center align-items-center">
+            
+                <section id="IntroductTitle">
+                    <header>
+                        <h4>Bem vindo ao seu</h4>
+                        <h1>Importador de metas</h1>
+                    </header>
+                    
+                    <p>
+                        Olá, caso você nunca tenha utilizado nosso software de importação de metas, acesse a central de ajuda. 
+                        Preparamos um conteúdo de aprendiza-lo por lá!
+                    </p>
+                    <a href="{% url 'planilhas:HomePage'%}" class="botão-vermelho">Como enviar metas</a>
+                </section>
+
+            </div>
+             <!--Introdução texto-->
+
+
+            <!-- Imagem introdutória-->
+            <div class="col-md-6 d-none d-md-flex justify-content-center ">
+                <img src="{% static 'img/advogado.png' %}" alt="">
+            </div>
+            <!-- Imagem introdutória-->
+
+
+
+        </article>
+        <!-- Caixa de introdução -->
+    
+    </div>
+    <!-- Container Do conteúdo do site-->
+        
+    
+    <div class="container-fluid" id="MetaEnviteContainer">
+
+        <!--Bolinha que aponta para baixo-->
+        
+        <div id="BallArrow" class="d-flex justify-content-center align-items-center">
+            <i  class="fa-solid fa-arrow-down"></i>
+        </div>
+        <!--Bolinha que aponta para baixo-->
+
+
+        <!--Conteúdo das metas-->
+        <div class="container">
+
+            <!-- Caixa de metas -->
+            <article class="row m-2 text-center" id="CaixaMetas">
+
+                <!-- Cabeçalho -->
+                <header>
+                    <h2>Escolha a meta que deseja enviar</h2>
+
+                    <p>
+                        Abaixo estão as metas que vocês podem enviar, 
+                        basta escolher qual deseja e ir para a página 
+                        de envio de metas. Boa sorte!
+                    </p>
+
+                </header>
+                <!-- Cabeçalho -->
+                
+                <!-- Metas -->
+                <div class="row" id="Metas">
+
+                    <!-- Meta -->
+                    <section class="col-md-4 col-12">
+                        <div class="meta-item yellow">
+
+                            <div class="content">
+                                <img src="{% static 'img/Deflatores.png' %}"  alt="">
+                                <h3>Deflatores</h3>
+                                <p>
+                                    Clique no botão abaixo, caso você deseje enviar a meta <strong>Deflatores</strong>.
+                                </p>
+                                <a href="{% url 'planilhas:MetaDeflator' %}" class="btn btn-warning ">Enviar Meta</a>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Meta -->
+
+                    <!-- Meta -->
+                    <section class="col-md-4 col-12">
+                        <div class="meta-item blue">
+                            <img src="{% static 'img/Incrementometa.png' %}" alt="">
+                            <h3>Incremento Meta</h3>
+                            <p>
+                                Clique no botão abaixo, caso você deseje enviar a meta <strong>Incremento Meta</strong>.
+                            </p>
+                            <a href="{% url 'planilhas:MetaIncremento' %}" class="btn btn-primary">Enviar Meta</a>
+                        </div>
+                    </section>
+                    <!-- Meta -->
+
+                    <!-- Meta -->
+                    <section class="col-md-4 col-12">
+                        <div class="meta-item red">
+                            <img src="{% static 'img/valorpremio.png' %}" alt="">
+
+                            <h3>Valor Prêmio</h3>
+                            <p>
+                                Clique no botão abaixo, caso você deseje enviar a meta <strong>Valor prêmio</strong>.
+                            </p>
+                            <a href="{% url 'planilhas:MetaValor' %}" class="btn btn-danger">Valor Prêmio</a>
+                        </div>
+                    </section>
+                    <!-- Meta -->
+
+                </div>
+                <!-- Metas -->
+
+            </article>
+            <!-- Caixa de metas -->
+
+        </div>
+        <!--Conteúdo das metas-->
+
+    </div>
+    <!--Caixa De Metas-->
+
+{% endblock 'body' %}

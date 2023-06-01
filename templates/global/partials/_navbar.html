@@ -1,0 +1,39 @@
+{% load static %}
+<div class="container">
+
+    <nav class="navbar navbar-expand-md navbar-dark">
+
+        <!-- Logo Da Barra De Navegação -->
+        <a href="{% url 'planilhas:HomePage' %}" class="navbar-brand font-weight-bold" id="NavTitle">
+            
+            <img src="{% static 'img/icon-navbar.png' %}" alt="">
+
+            <span>
+                M.I.S Planejamento
+            </span>
+
+        </a>
+
+
+        
+        <!-- Menu da Navegação Responsiva-->
+        <button class="navbar-toggler"
+        data-toggle="collapse" data-target="#Menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navegação -->
+        <div class="collapse navbar-collapse" id="Menu">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"> 
+                    <a class="nav-link" href="{% url 'planilhas:HomePage' %}">Home</a> 
+                </li>
+                <li class="nav-item"> 
+                    <a class="nav-link" href="#">Ajuda</a> 
+                </li>
+            </ul>
+        </div>
+        <!-- Navegação -->
+
+    </nav>
+</div>

@@ -1,0 +1,65 @@
+/*Css padrão do site inteiro, aqui irei colocar as formatações mais genéricas, como cor de fundo,
+fontes e etcs...*/
+
+
+/*FONTES USADAS NO PROJETO*/
+@font-face {
+    font-family: "Titulo" ;
+    src: ('');
+}
+
+@font-face {
+    font-family: "Texto";
+    src: ();
+}
+
+
+/*BODY*/
+#BodyBg{
+    background-color: #0D0D0D;
+}
+
+
+
+
+/*FORMATANDO A BARRA DE NAVEGAÇÃO DO TOPO DA PÁGINA
+-------------------------------------------------------*/
+
+.nav-link{
+    font-weight: bold;
+    color: rgb(255, 171, 14);
+}
+#NavTitle img{
+  width: 30px;
+}
+/*FORMATANDO A BARRA DE NAVEGAÇÃO DO TOPO DA PÁGINA
+-------------------------------------------------------*/
+
+
+.botão-vermelho{
+    background-color: #E82626;
+    padding: 8px 10px;
+    border-radius: 5px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+
+    box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.6);
+}
+
+
+@media  (max-width: 767.98px)
+{ 
+  nav .navbar-brand{
+    font-size: 0.8em;
+  }
+  nav .navbar-toggler-icon{
+    font-size: 0.7em;
+  }
+  ul .nav-item
+  {
+    font-size: 0.7em;
+  }
+}

@@ -1,0 +1,191 @@
+/*// X-Small devices (portrait phones, less than 576px)
+// No media query for `xs` since this is the default in Bootstrap
+
+*/
+
+html,body{
+    height: 100%;
+}
+
+#black{
+    background-color: #1E1E1E;
+    border-radius: 0px 40px 40px 0px;
+}
+#DivsPBg,#DivsPBg .row,#black{
+    height: 100%;
+}
+
+
+
+/*Formatando texto para envio da planilha*/
+#EnviteMeta hr{
+    background-color: #474747;
+    margin: 30px 0px;
+}
+
+#IntroductMeta{
+    color: whitesmoke;
+}
+#IntroductMeta h1{
+    font-weight: 800;
+    font-size: 3em;
+    margin: 0px;
+}
+#IntroductMeta p{
+    font-weight: lighter;
+    opacity: 0.75;
+}
+#IntroductMeta .meta-name
+{
+    color: #EE3434;
+    font-weight: 650;
+}
+
+/*FORMATANDO O INPUT DA PLANILHA
+-------------------------------------------*/
+    label.file-upload {
+        position:relative; 
+        overflow:hidden;
+        margin-bottom: 0px;
+    }
+    .file-upload  input { 
+        display: none;
+    }
+    .InputBox{
+        display: flex;
+    }
+    .file-upload,.IconInput
+    {
+        display: flex; 
+        align-items: center;
+    }
+    .file-upload /*Formatando o label, que irá servir como input*/
+    {
+    
+        color: whitesmoke;
+
+        font-size: 0.9em;
+        letter-spacing: 0.4px;
+        font-weight: 500;
+        text-indent: 10px;
+
+        background-color: #414141;
+        height: 100%;
+        width: 300px;
+        border-radius: 6px 0px 0px 6px;
+        padding: 10px;
+        
+    }
+    .IconInput{/*Formatando o icon do input*/
+        background-color: #EE3434;
+        padding: 0px 15px ;
+        border-radius: 0px 6px 6px 0px;
+    }
+    .file-upload p{
+        margin: 0px;
+    }
+    .formexcel
+    {
+        color: whitesmoke;
+        opacity: 0.8;
+    }
+    .formexcel input[type="submit"]{
+        margin-top: 10px;
+        display: block;
+        color: whitesmoke;
+        font-weight: bold;
+        font-size: 0.75em;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        background-color: #EE3434;
+        width: 120px;
+    }
+    .formexcel a 
+    {
+        font-size: 0.9em;
+        text-decoration: none !important;
+        color: whitesmoke;
+    }
+    .file-upload a:hover
+    {
+        color: whitesmoke;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*X-Small devices*/
+@media (max-width:575.98px)
+{}
+
+/*// Small devices (landscape phones, 576px and up)*/
+@media (min-width: 576px) and (max-width: 767.98px)
+{ 
+    
+}
+
+/*// Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) and (max-width:991.98px)
+{
+
+}
+
+/*// Large devices (desktops, 992px and up)*/
+@media (min-width: 992px) and (max-width:1199.98px)
+{ 
+    
+}
+
+/*// X-Large devices (large desktops, 1200px and up)*/
+@media (min-width: 1200px) and (max-width:1399.98px)
+{ 
+    
+}
+
+/*// XX-Large devices (larger desktops, 1400px and up)*/
+@media (min-width: 1400px)
+ { 
+    
+}
+
+
+
+@media  (max-width: 767.98px)
+{ 
+
+    #IntroductMeta{
+        text-align: center;
+    }
+    #IntroductMeta h1{
+        font-size: 2em;
+    }
+    #IntroductMeta p{
+        font-size: 0.9em;
+    }
+    .formexcel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .file-upload
+    {
+        width: 180px;
+        font-size: 0.68em;
+    }
+    .IconInput{
+        font-size: 0.9em;
+    }
+   
+}
