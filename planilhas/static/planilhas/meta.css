@@ -1,0 +1,37 @@
+
+.file-transform{
+    background-color: #fff;
+    height: 26.4;
+    padding: 10px 10px;
+    border-radius: 6px;
+    position: relative;
+    color: #495057;
+    font-size: 0.9em;
+}
+
+input::file-selector-button {
+    width: 100%;
+    margin-top: -5px;
+    padding-bottom: 6px;
+    margin-left: -10px;
+    position: absolute;
+    border-radius: 6px;
+    opacity: 0;
+}
+#formdata{
+    margin-top: 30px;
+}
+#formdata div{
+    margin-bottom: 15px;
+}
+
+#files h6{
+    color: #b4b4b4;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+hr{
+    border: 1px solid #fff;
+    margin: 40px 0px;
+}

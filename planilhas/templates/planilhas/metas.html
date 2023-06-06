@@ -1,0 +1,74 @@
+{% extends 'global/base.html' %}
+{% load static %}
+
+{% block 'title' %}Importador De Metas{% endblock 'title' %}teste
+
+
+
+{% block 'css' %}
+    <link rel="stylesheet" href="{% static 'planilhas/meta.css' %}">
+
+{% endblock 'css' %}
+
+
+{% block 'body' %}
+
+
+    <div class="container">
+
+        <div class="w-50 mx-auto">
+            <h3 class="display-4 text-center">Envio de meta</h3>
+
+            <div>
+
+                <form method="post" enctype="multipart/form-data" id="formdata">
+                    {% csrf_token %}
+                    
+                    <!-- Qual carteira é essa? -->
+                    
+                    <div class="form-group">
+                        <select name="carteira" class="form-control form-control-sm">
+                        
+                            <option value="alto_ticket">ALTO TICKET</option>
+                            <option value="comercial_imobiliario">COMERCIAL IMOBILIARIO JURIDICO</option>
+                            <option value="veiculos_amg">VEICULOS AMIGAVEL</option>
+                            <option value="veiculos_lp">VEICULOS LP</option>
+                            <option value="consorcio_imo_jur">CONSÓRSCIO IMOBILIARIO JUR</option>
+                            <option value="comercial_juri">COMERCIAL JURIDICO</option>
+                            <option value="credito_imobiliario_juamg">CREDITO IMOBILIARIO JURIDICO/AMIGÁVEL</option>
+                            <option value="veiculos_juri">VEICULOS JURIDICO</option>
+                            
+                        </select>
+                    </div>
+                    <hr>
+                    
+                    <!--Meta filha-->
+                    <div id="files">
+                        <h6>Insira a meta incremento metas</h6>
+                        <div class="form-group file-transform">
+                            <input type="file" id="meta_filha" name="meta_filha" class="form-control-file" >
+                        </div>
+
+                        <!--Meta mãe-->
+                        <h6>Insira a meta de operadores</h6>
+                        <div class="form-group file-transform">
+                            
+                            <input type="file" id="meta_mae" name="meta_mae" class="form-control-file" >
+                        </div>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-success btn-block">Enviar meta</button>
+                </form>
+
+            </div>
+
+            <div class="mt-5">
+                {%include 'global/partials/_messages.html'%}
+            </div>
+        </div>
+        
+
+    </div>
+
+{% endblock 'body' %}
