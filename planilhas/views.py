@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib import messages
 import openpyxl
 import pyodbc
-import time
+from openpyxl.styles import PatternFill, Font
 
 # Create your views here.
 def index(request):
@@ -79,7 +79,7 @@ def incremento(request):
 
             return exist
 
-        def headers_is_corretct(plan,tipo=None):
+        def headers_is_corretct(plan,tipo):
             """
             True: Está correto
             False: Está incorreto
@@ -88,26 +88,57 @@ def incremento(request):
             uma planilha errada, que possui uma aba nomeada DADOS.
             """
 
-            header_default = [
-                'COMP',
-                'CARTEIRA',
-                'FRENTE', 
-                'TIPO_META', 
-                'META_1', 
-                'META_2', 
-                'META_3', 
-                'META_4',
-                'META_5'
-            ]
             header_plan = []
+
+            if tipo == 'incremento':
+                header_default = [
+                    'COMP',
+                    'CARTEIRA',
+                    'FRENTE', 
+                    'TIPO_META', 
+                    'META_1', 
+                    'META_2', 
+                    'META_3', 
+                    'META_4',
+                    'META_5'
+                ]            
+                max_col = 9
+            elif tipo == 'operadores':        
+                header_default = [
+                    'COMPETENCIA',
+                    'DATA_IMPORT',	
+                    'QUEM_IMPORTOU',	
+                    'COD_CRED',	
+                    'NOME_CREDOR',	
+                    'COD_FUNC',
+                    'NOME_FUNCIONARIO',
+                    'SUPERVISOR'	,
+                    'FRENTE'	,
+                    'META_QTDE'	 ,
+                    'META_HONORARIOS', 	 
+                    'META_REPASSE' 	 ,
+                    'META_VALOR' 	 ,
+                    'META_ATIVA' 	,
+                    'TURNO'   	,
+                    'ATUAÇÃO'	,
+                    'ESTAGIO'	,
+                    'DATA_INI'	,
+                    'DATA_FIN'	,
+                    'TIPO_MEDICAO',
+
+                ]
+                max_col = 20
+
+
             #TODO: Criar um sistema que muda o local de busca de valores, já que em metas operadores está em um local e incremento meta em outro
-            for row in plan.iter_rows(min_row=3, max_row=3, max_col=9 ):
+            for row in plan.iter_rows(min_row=3, max_row=3, max_col=max_col ):
                 for cell in row:
                     header_plan.append(cell.value)
 
-            return header_plan == header_default            
-
-        def get_data_meta(plan):
+           
+            return header_plan == header_default
+            
+        def get_data_meta(plan,max_col):
             """
             Retorna um dicionário com nomes das colunas em forma de key, e os dados na forma de valores da key.
             """
@@ -116,19 +147,34 @@ def incremento(request):
 
             }
 
-
             # Passa por cada coluna
-            for row in plan.iter_cols(min_row=3, max_col=9):
+            for row in plan.iter_cols(min_row=3, max_col=max_col):
 
                 # Criando uma key com o nome da coluna COMP, ela recebe o valor lista, para que possamos adicionar valores
-                dados[row[0].value] = []
+                dados[row[0].value] = set()
 
                 # Adicionando valores na key atual
                 for cell in row:
-                    dados[row[0].value].append(cell.value)
+                    
+                    # Se o valor da célula for o nome da coluna, pule o looping
+                    if cell.value == row[0].value:
+                        continue
 
+                    dados[row[0].value].add(cell.value)  
 
+            return dados
 
+        def format_number(plan):
+
+            fundo_vermelho = PatternFill("solid", fgColor="EB607F")
+            font_bold = Font(bold=True)
+
+            for coluna in plan.iter_cols(min_row=4, max_col=9):
+                for cell in coluna:
+                    if type(cell.value) != int:
+                        cell.fill = fundo_vermelho
+                        cell.font = font_bold
+            return plan
         # Pegando informações, nome carteira e planilhas
         #--------------------------------------------------
         carteira = request.POST.get('carteira')
@@ -192,37 +238,107 @@ def incremento(request):
 
 
         # Verificando se os cabecalhos são os esperados
-        if not headers_is_corretct(incremento_meta):
+        if not headers_is_corretct(incremento_meta,'incremento'):
             messages.add_message(
                 request,
                 messages.WARNING,
-                "Não foi possível encontrar o cabeçalho de informações, na aba de dados. Você está enviando a meta correta? Verifique!"
+                "Não foi possível encontrar o cabeçalho de informações, na aba de dados, na planilha incremento meta. Você está enviando a meta correta? Verifique!"
             )
             return render(request, 'planilhas/metas.html')
 
-        #TODO: Criar um layout para a metas operadores e uma validação padrão.
-        if not headers_is_corretct(meta_op):
-            ...
+        if not headers_is_corretct(meta_op,'operadores'):
+            messages.add_message(
+                request,
+                messages.WARNING,
+                "Não foi possível encontrar o cabeçalho de informações, na aba de dados, na planilha meta operadores. Você está enviando a meta correta? Verifique!"
+            )
+            return render(request, 'planilhas/metas.html')
 
-        
+ 
 
         # VALIDANDO AS INFORMAÇÕES EXISTENTES NA PLANILHA ENVIADA
         #----------------------------------------------------------------
-        get_data_meta(incremento_meta)
-        columns_key = {
-            'meta_operadores' : {
-                'COMP'      :   [],
-                'CARTEIRA'  :   [],
-                'FRENTE'    :   [], 
-                'TIPO_META' :   [],                
-            },
-            'incremento_meta' : {
-                'COMP'      :   [],
-                'CARTEIRA'  :   [],
-                'FRENTE'    :   [], 
-                'TIPO_META' :   [], 
-            }
-        }
+        dados_incremento = get_data_meta(incremento_meta,9)
+        dados_operadores = get_data_meta(meta_op,20)
+
+        # Formatando o campo TIPO MEDICAO da meta de operadors, para poder comparar com a outra planilha
+        def formatando_tipo_medicao(valores):
+
+            new_values = set()
+            for valor in valores:
+                new_values.add(valor.replace('_',' - '))
+            
+            return new_values
+        
+        validador_um = dados_incremento['COMP'] == dados_operadores['COMPETENCIA'] and dados_incremento['FRENTE'] == dados_operadores['FRENTE']
+        validador_dois = dados_incremento['CARTEIRA'] == dados_operadores['NOME_CREDOR'] and dados_incremento['TIPO_META'] == formatando_tipo_medicao(dados_operadores['TIPO_MEDICAO'])
+
+        if not validador_um and not validador_dois:
+            messages.add_message(request,messages.ERROR,'Os dados das planilhas estão incorretos.')
+            return render(request, 'planilhas/metas.html')
+
+        #TODO: Criar sistema que preenche o nome da carteira com o cod cred na planilha.
+
+
+
+        # Formatando o campo METAS, da planilha de incremento
+        # Verificando se são números, não há espaços em brancos
+
+        row = {
+            'META_1' : {
+                'coluna_dados' : dados_incremento['META_1'],
+                'coluna_local' : 5
+                },
+
+            'META_2' : {
+                'coluna_dados' : dados_incremento['META_2'],
+                'coluna_local' : 6
+                },
+
+            'META_3' : {
+                'coluna_dados' : dados_incremento['META_3'],
+                'coluna_local' : 7
+                },
+
+            'META_4' : {
+                'coluna_dados' : dados_incremento['META_4'],
+                'coluna_local' : 8
+                },
+
+            'META_5' : {
+                'coluna_dados' : dados_incremento['META_5'],
+                'coluna_local' : 9
+                },
+        }     
+        
+        exists_str = bool()
+
+        # Passando em cada letra, de cada meta e verificando se há letras ou espaços
+        for conjunto_dados in row.values():
+    
+            for meta in conjunto_dados['coluna_dados']:
+               if type(meta) != int:
+                   exists_str = True
+                   break
+            
+        if exists_str:
+            planilha = format_number(incremento_meta)
+            messages.add_message(request,messages.ERROR,'Alguns dados contidos na planilhas, não são do tipo correto')
+        
+
+            contexto = {
+                        'planilha': planilha
+                        }
+            
+            #TODO: Enviar planilha devolta para o usuário.
+            return render(
+                request, 
+                'planilhas/metas.html',
+                contexto 
+                ) 
+
+       
+                
 
 
 
