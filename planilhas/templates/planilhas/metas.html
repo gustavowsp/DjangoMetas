@@ -41,6 +41,29 @@
                             
                         </select>
                     </div>
+
+                    {% if url %}
+
+                    <div class="formexcel ">
+                        
+                        <div class="InputBox">
+    
+                            
+                            
+                            <div class="Input">
+                                <label class="file-upload">
+                                    <a href="{{url}}" download="Planilha_com_erros.xlsx">Baixar planilha</a>
+                                </label>
+                            </div>
+                            
+                            <div class="IconInput bg-primary">
+                                <i class="fa-sharp fa-solid fa-cloud-arrow-down"></i>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                {% endif %}
                     <hr>
                     
                     <!--Meta filha-->
@@ -68,27 +91,7 @@
                 {%include 'global/partials/_messages.html'%}
             </div>
 
-            {% if planilha %}
-                <div class="formexcel">
-                    
-                    <div class="InputBox">
-
-                        
-                        
-                        <div class="Input">
-                            <label class="file-upload">
-                                <a href="{{planilha.values}}" download="Planilha">Baixar planilha</a>
-                            </label>
-                        </div>
-                        
-                        <div class="IconInput bg-primary">
-                            <i class="fa-sharp fa-solid fa-cloud-arrow-down"></i>
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            {% endif %}
+           
 
         </div>
         

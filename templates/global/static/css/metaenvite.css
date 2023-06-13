@@ -53,6 +53,7 @@ html,body{
     }
     .InputBox{
         display: flex;
+        margin-bottom:0px;
     }
     .file-upload,.IconInput
     {
