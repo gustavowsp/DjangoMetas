@@ -468,7 +468,6 @@ def valor(request):
     messages.add_message(request,messages.INFO,"Estamos desenvolvendo esta página ainda... ")
     return redirect('planilhas:HomePage') 
 
-
 def deflator(request):
     messages.add_message(request,messages.INFO,"Estamos desenvolvendo esta página ainda... ")
     return redirect('planilhas:HomePage') 
