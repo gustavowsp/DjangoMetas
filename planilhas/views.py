@@ -1,9 +1,8 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
+import planilhas.viewsfunc.view_incremento as incremento_functions
 import openpyxl
-import pyodbc
-from openpyxl.styles import PatternFill, Font
-import random
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -12,238 +11,15 @@ def index(request):
 
 def incremento(request):
 
-
-    INSERT_INCREMENTO_META = """INSERT INTO HOMOLOGACAO.DBO.ML_12062023_TESTE_METAINCREMENTO 
-VALUES """
-
-    def desativando(cursor,cn):
-        cursor.close()
-        cn.close()
-
-    def verify_carteira(carteira):
-        """
-        True: Existe
-        False: Não Existe
-
-        Essa função verifica se a carteira 
-        que foi enviada existe"""
-
-        #TODO: Seria interresante puxar as carteiras existentes, de cada meta, de um banco de dados
-        # Assim, sempre que uma nova carteira surgir, é so adicionar no banco de dados e ela passará a passar na nossa validação
-        # Por enquanto se uma nova carteira surge, temos que mudar no hardcode
-
-        # True - Existe   |   False - Não existe
-        carteira_existe = False
-
-        carteiras_existentes = (
-            'alto_ticket',
-            'comercial_imobiliario',
-            'veiculos_amg',
-            'veiculos_lp',
-            'consorcio_imo_jur',
-            'comercial_juri',
-            'credito_imobiliario_juamg',
-            'veiculos_juri',
-        )
-
-        if carteira in carteiras_existentes:
-            carteira_existe = True
-
-        return carteira_existe
-
-    def is_excel(plan):
-        """
-        True: é uma planilha excel
-        False: Não é uma planilha excel
-        """
-        
-        try: # Só abre se for excel, caso não vai dar erro
-            openpyxl.load_workbook(plan)
-            is_excel = True
-        except:
-            is_excel =  False
-
-        return is_excel
-
-    def sheet_exists(plan):
-        """
-        A página de dados existe?
-        Sim : True
-        Não : False
-
-        Essa função verifica se a aba de dados existe, para que possamos ter acesso aos dados.
-        """
-
-        if 'Dados' not in plan.sheetnames:
-            exist = False
-        else:
-            exist = True
-
-        return exist
-
-    def headers_is_corretct(plan,tipo):
-        """
-        True: Está correto
-        False: Está incorreto
-
-        Essa função verifica se os cabeçalhos da meta existem, caso não existam, possívelmente estamos abrindo
-        uma planilha errada, que possui uma aba nomeada DADOS.
-        """
-
-        header_plan = []
-
-        if tipo == 'incremento':
-            header_default = [
-                'COMP',
-                'CARTEIRA',
-                'FRENTE', 
-                'TIPO_META', 
-                'META_1', 
-                'META_2', 
-                'META_3', 
-                'META_4',
-                'META_5'
-            ]            
-            max_col = 9
-        elif tipo == 'operadores':        
-            header_default = [
-                'COMPETENCIA',
-                'DATA_IMPORT',	
-                'QUEM_IMPORTOU',	
-                'COD_CRED',	
-                'NOME_CREDOR',	
-                'COD_FUNC',
-                'NOME_FUNCIONARIO',
-                'SUPERVISOR'	,
-                'FRENTE'	,
-                'META_QTDE'	 ,
-                'META_HONORARIOS', 	 
-                'META_REPASSE' 	 ,
-                'META_VALOR' 	 ,
-                'META_ATIVA' 	,
-                'TURNO'   	,
-                'ATUAÇÃO'	,
-                'ESTAGIO'	,
-                'DATA_INI'	,
-                'DATA_FIN'	,
-                'TIPO_MEDICAO',
-
-            ]
-            max_col = 20
-
-
-        #TODO: Criar um sistema que muda o local de busca de valores, já que em metas operadores está em um local e incremento meta em outro
-        for row in plan.iter_rows(min_row=3, max_row=3, max_col=max_col ):
-            for cell in row:
-                header_plan.append(cell.value)
-
-        
-        return header_plan == header_default
-
-    def get_data_meta_com_duplicatas(plan,max_col):
-        """
-        Retorna um dicionário com nomes das colunas em forma de key, e os dados na forma de valores da key.
-        """
-
-        dados = []
-
-        # Passa por cada coluna
-        for row in plan.iter_rows(min_row=4, max_col=max_col):
-
-            # Criando uma key com o nome da coluna COMP, ela recebe o valor lista, para que possamos adicionar valores
-            dados.append([])
-
-            # Adicionando valores na key atual
-            for cell in row:
-            
-
-                dados[-1].append(cell.value)  
-
-        return dados
-
-    def get_data_meta_sem_duplicatas(plan,max_col):
-        """
-        Retorna um dicionário com nomes das colunas em forma de key, e os dados na forma de valores da key.
-        """
-
-        dados = {
-
-        }
-
-        # Passa por cada coluna
-        for row in plan.iter_cols(min_row=3, max_col=max_col):
-
-            # Criando uma key com o nome da coluna COMP, ela recebe o valor lista, para que possamos adicionar valores
-            dados[row[0].value] = set()
-
-            # Adicionando valores na key atual
-            for cell in row:
-                
-                # Se o valor da célula for o nome da coluna, pule o looping
-                if cell.value == row[0].value:
-                    continue
-
-                dados[row[0].value].add(cell.value)  
-
-        return dados
-
-    def format_number(plan):
-
-        fundo_vermelho = PatternFill("solid", fgColor="EB607F")
-        font_bold = Font(bold=True)
-
-        for coluna in plan.iter_cols(min_col=5 ,min_row=4, max_col=9):
-            for cell in coluna:
-                if type(cell.value) != int:
-                    cell.fill = fundo_vermelho
-                    cell.font = font_bold
-        return plan
-
-    def pegue_um_numero_aleatorio():
-        numro_um = random.randint(0,999)
-        numro_dois = random.randint(1,9)
-        numro_tres = random.randint(9,99)
-
-        return f'{numro_um}{numro_dois}{numro_tres}'
-
-    def execute_consulta(consulta):
-     
-        def conectando():
-
-            
-            
-            cn = pyodbc.connect(f'DRIVER={"SQL Server"};SERVER=10.10.5.31;DATABASE=METAS;UID=planejamento;PWD=pl@n1234')
-            
-            cursor = cn.cursor()
-            return (cursor,cn)
-                    
-
-        cursor,cn = conectando()
-        # Executando uma consulta
-        try:
-            cursor.execute(consulta)
-        except:
-            return cursor.fetchone, cursor,cn, True    
-                
-        # Pegando o resultado da consulta
-        return cursor.fetchone, cursor,cn, False
-    
-
     if request.method == 'POST':
-        """RECUPERAÇÃO DE INFORMAÇÕES
-        
-        Nesta etapa vamos recuperar e verificar se foi enviado
-        as informações necessárioas para o funcionamento da view."""
 
-
-        # Pegando informações, nome carteira e planilhas
-        #--------------------------------------------------
         carteira = request.POST.get('carteira')
         
-        # Recuperando planilhas
+        # C000
         try:
             meta_op = request.FILES['meta_mae']
             incremento_meta = request.FILES['meta_filha']
+            # Pegamos as duas planilhas
         except:
             messages.add_message(
                 request,
@@ -251,216 +27,178 @@ VALUES """
                 "Ops! Você se esqueceu de enviar uma das planilhas"
                 )
             return render(request, 'planilhas/metas.html')
+            # O usuário não enviou as planilhas e recuperamos algo que não existe, ocasionando em um erro.
         
-        # Verificando se carteira existe
-        if not verify_carteira(carteira): 
-            messages.add_message(request ,messages.ERROR, "Essa carteira não existe...")
-            return render(request, 'planilhas/metas.html')
-        
+        # Verificamos que as planilhas de metas foram enviadas.
 
 
-        # Os arquivos enviados, são realmentes planilhas excel?
-        if not is_excel(meta_op): 
-            messages.add_message(request,messages.ERROR, "Ops! O que foi enviado no campo meta operadores, não era uma planilha ")
-            return render(request, 'planilhas/metas.html')
-        else:
-            meta_op = openpyxl.load_workbook(meta_op) # Abrindo a planilha
-        
-        if not is_excel(incremento_meta):
-            messages.add_message(request,messages.ERROR, "Ops! O que foi enviado no campo incremento meta, não era uma planilha ")
-            return render(request, 'planilhas/metas.html')
-        else:
-            incremento_meta = openpyxl.load_workbook(incremento_meta)
+        # C001
+        metas_erradas, planilhas_or_template,  = incremento_functions.informacoes_corretas(
+            request,
+            carteira=carteira,
+            meta_op=meta_op,
+            incremento_meta=incremento_meta,
+            meta='incremento'
+        )
+        # Verificamos se as planilhas estão corretas e se a carteira existe.
+        incremento_meta = openpyxl.load_workbook(incremento_meta)
 
 
-
-        # Verificando se a página de dados existe
-        if not sheet_exists(meta_op):
-            messages.add_message(
-                request,
-                messages.ERROR, 
-                "Ops! a página 'dados' na planilha meta operadores, não pode ser encontrada. Baixe nosso layout de metas e insira os dados!")
-            return render(request, 'planilhas/metas.html')
-        else:
-            meta_op_dados = meta_op['Dados']
-        
-        if not sheet_exists(incremento_meta):
-            messages.add_message(
-                request,
-                messages.ERROR, 
-                "Ops! a página 'dados' na planilha incremento meta, não pode ser encontrada. Baixe nosso layout de metas e insira os dados!")
-            return render(request, 'planilhas/metas.html')
-        else:
-            incremento_meta_dados = incremento_meta['Dados']
-
-
-
-        # Verificando se os cabecalhos são os esperados
-        if not headers_is_corretct(incremento_meta_dados,'incremento'):
-            messages.add_message(
-                request,
-                messages.WARNING,
-                "Não foi possível encontrar o cabeçalho de informações, na aba de dados, na planilha incremento meta. Você está enviando a meta correta? Verifique!"
+        # R000
+        if metas_erradas:
+            return render(
+                metas_erradas, # Existe um requeste nesta variável.
+                planilhas_or_template
             )
-            return render(request, 'planilhas/metas.html')
-
-        if not headers_is_corretct(meta_op_dados,'operadores'):
-            messages.add_message(
-                request,
-                messages.WARNING,
-                "Não foi possível encontrar o cabeçalho de informações, na aba de dados, na planilha meta operadores. Você está enviando a meta correta? Verifique!"
-            )
-            return render(request, 'planilhas/metas.html')
-
- 
-
-        # VALIDANDO AS INFORMAÇÕES EXISTENTES NA PLANILHA ENVIADA
-        #----------------------------------------------------------------
-        dados_incremento = get_data_meta_sem_duplicatas(incremento_meta_dados,9)
-        dados_operadores = get_data_meta_sem_duplicatas(meta_op_dados,20)
-
-        # Formatando o campo TIPO MEDICAO da meta de operadors, para poder comparar com a outra planilha
-        def formatando_tipo_medicao(valores):
-
-            new_values = set()
-            for valor in valores:
-                new_values.add(valor.replace('_',' - '))
-            
-            return new_values
-        
-        validador_um = dados_incremento['COMP'] == dados_operadores['COMPETENCIA'] and dados_incremento['FRENTE'] == dados_operadores['FRENTE']
-        validador_dois = dados_incremento['CARTEIRA'] == dados_operadores['NOME_CREDOR'] and dados_incremento['TIPO_META'] == formatando_tipo_medicao(dados_operadores['TIPO_MEDICAO'])
-
-        if not validador_um and not validador_dois:
-            messages.add_message(request,messages.ERROR,'Os dados das planilhas estão incorretos.')
-            return render(request, 'planilhas/metas.html')
-
-        #TODO: Criar sistema que preenche o nome da carteira com o cod cred na planilha.
+        # As metas estavam erradas então vamos retornar um erro
 
 
 
-        # Formatando o campo METAS, da planilha de incremento
-        # Verificando se são números, não há espaços em brancos
-
-        row = {
-            'META_1' : {
-                'coluna_dados' : dados_incremento['META_1'],
-                'coluna_local' : 5
-                },
-
-            'META_2' : {
-                'coluna_dados' : dados_incremento['META_2'],
-                'coluna_local' : 6
-                },
-
-            'META_3' : {
-                'coluna_dados' : dados_incremento['META_3'],
-                'coluna_local' : 7
-                },
-
-            'META_4' : {
-                'coluna_dados' : dados_incremento['META_4'],
-                'coluna_local' : 8
-                },
-
-            'META_5' : {
-                'coluna_dados' : dados_incremento['META_5'],
-                'coluna_local' : 9
-                },
-        }     
-        
-        exists_str = bool()
-
-        # Passando em cada letra, de cada meta e verificando se há letras ou espaços
-        for conjunto_dados in row.values():
+        # C002
+        # Pegando a sheet de dentro da tupla, que foi retornada na função anteior.
+        incremento_sheet_dados = planilhas_or_template[0]
+        metaop_sheet_dados = planilhas_or_template[1]
     
-            for meta in conjunto_dados['coluna_dados']:
-               if type(meta) != int:
-                   exists_str = True
-                   break
+        # Pegando os valores das planilhas.
+        dados_incremento = incremento_functions.recuperar_informacoes_unicas(incremento_sheet_dados,9)
+        dados_operadores = incremento_functions.recuperar_informacoes_unicas(metaop_sheet_dados,20)
+
+
+        # C003
+        # Verificando se há linhas excedentes na planilha
+        existem_linhas_excedentes = incremento_functions.existem_linhas_excedentes(incremento_sheet_dados)
+        if existem_linhas_excedentes:
+            messages.add_message(request,messages.ERROR, 'Em sua planilha há linhas que possuem células vazias, preenchas!')
+            return render(request,'planilhas/metas.html')
+
+
+
+        # C004
+        # Comparando os valores de cada coluna chave com a planilha de metas operadores
+        metas_erradas = incremento_functions.comparacao_dados(request,dados_incremento,dados_operadores)
+        if metas_erradas:
+            request = metas_erradas[0]
+            template = metas_erradas[1]
+            return render(request,template)
+
+        # Verificando se o nome está correto
+        nome_carteira_errado = incremento_functions.validando_nome_carteira(request,carteira,dados_incremento)
+        if nome_carteira_errado:
+            return render(request, 'planilhas/metas.html')
+        
+        # Alterando o nome_cred na planilha para o nome padrão
+        total_linhas_pagina = incremento_functions.contar_linhas(incremento_sheet_dados)
+        incremento_sheet_dados = incremento_meta['Dados']        
+        incremento_functions.padronizando_nome_cartira(incremento_sheet_dados,carteira,total_linhas_pagina)
+        
+        # Pegando os novos valores, já que alterei acima.
+        dados_incremento = incremento_functions.recuperar_informacoes_unicas(incremento_sheet_dados,9)
+
+
+        # C005 -- Formatando células com valores diferentes de int
+        row = (
+            dados_incremento['META_1'],
+            dados_incremento['META_2'],
+            dados_incremento['META_3'],
+            dados_incremento['META_4'],
+            dados_incremento['META_5'],
+            )   
+        # Há células com outro valor a não ser int?
+        if incremento_functions.existe_valores_incorretos(row):
             
-        if exists_str:
-            format_number(incremento_meta_dados) # Formatando campos incorretos da página.
-            messages.add_message(request,messages.ERROR,'Alguns dados contidos na planilhas, não são do tipo correto')
+            # Formatando as células incorretas
+            incremento_functions.format_number(incremento_sheet_dados) 
+            # TODO: Retornar planilha formatada para o usuário
+            name = incremento_functions.gerador_nome()
+            path = 'media/planilha-'
+            incremento_meta.save(f'{path}{name}.xlsx')
 
-            while True:
-                try:
-                    numero_aleatorio = pegue_um_numero_aleatorio()
-                    incremento_meta.save(
-                        f'templates/global/planilhas/planilha_com_erro{numero_aleatorio}.xlsx'
-                        )
-                    nome_planilha_incorreta = f'planilha_com_erro{numero_aleatorio}.xlsx'
-                    break
-                except:
-                    ...
-
-
-            contexto = {
-                'url' : f'/media/{nome_planilha_incorreta}'
+            context = {
+                'planilha_incorreta_url' : f'{path}{name}.xlsx'
             }
 
-            #TODO: Enviar planilha devolta para o usuário.
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Alguns dados contidos na planilhas, não são do tipo correto')
             return render(
                 request, 
                 'planilhas/metas.html',
-                contexto
-                ) 
+                context
+            ) 
 
 
-        # Importando a meta
-        data_planilha_incremento = get_data_meta_com_duplicatas(incremento_meta_dados,9)
-        
-        def criando_valors_para_insert(valores):
-            
-            consulta = str()
-
-
-            linhas_existentes_planilha =len(valores)
-            linha_atual = 0
-
-            for row in valores:
-                consulta += ' ( '
-
-                celula_atual = 0
-                for cell in row:
-
-                    # Adicionando o valor na consulta
-                    if type(cell) == str:
-                        consulta += "'"
-                        consulta += cell
-                        consulta += "'"
-                    else:
-                        consulta += str(cell)
-                    
-                    celula_atual += 1
-                    if celula_atual < 9:
-                        consulta += ', '
-                
-                linha_atual += 1
-                if linha_atual < linhas_existentes_planilha:
-                    consulta += ' ), '
-                else:
-                    consulta += ') '
-            return consulta
+        carteiras_da_meta = dados_incremento['CARTEIRA']
+        competencia_da_meta = dados_incremento['COMP']
        
-        consulta = criando_valors_para_insert(data_planilha_incremento)
-        consulta_final = (INSERT_INCREMENTO_META + consulta)
+        puxando_meta_ativa = incremento_functions.criando_query_meta_ativa(
+            carteiras_da_meta,
+            competencia_da_meta,
+            incremento_functions.BUSCANDO_METAS_ATIVAS)
 
-        itens = execute_consulta(consulta_final)
+        itens = incremento_functions.execute_consulta(puxando_meta_ativa)
+        query_falhou = itens[2]
 
-        if itens[3]:
-            desativando(itens[1],itens[2])
-            messages.add_message(request,messages.ERROR,"Ops, algo deu errado. Contate o desenvolvedor, não conseguimos importar sua planilha para o banco de dados")
+        if query_falhou:
+            incremento_functions.desativando(itens[0],itens[1]) # Desativando a conexão sql
+            messages.add_message(
+                request,messages.
+                ERROR,
+                "Ops, algo deu errado. Contate o desenvolvedor, não conseguimos importar sua planilha para o banco de dados"
+                )
             return render(request, 'planilhas/metas.html')
-        
         else:
-            itens[2].commit()        
-            desativando(itens[1],itens[2])
+            meta_existente = itens[0].fetchall()
+            incremento_functions.desativando(itens[0],itens[1]) # Desativando a conexão sql
 
+        # Alterar meta antiga para inativa
+        if meta_existente:
+            alterando_meta_ativa = incremento_functions.criando_query_meta_ativa(
+                carteiras_da_meta,
+                competencia_da_meta,
+                incremento_functions.ALTERANDO_META_ATIVA
+                )
+            itens = incremento_functions.execute_consulta(alterando_meta_ativa)
+            
+            importacao_nao_funcionou = itens[2] 
+            if importacao_nao_funcionou:
+                incremento_functions.desativando(itens[0],itens[1]) # Desativando a conexão sql
+                messages.add_message(
+                    request,messages.
+                    ERROR,
+                    "Ops, algo deu errado. Contate o desenvolvedor, não conseguimos alterar meta antiga no banco de dados"
+                    )
+                return render(request, 'planilhas/metas.html')
+            else:
+                itens[1].commit() # Confirmando as alterações    
+                incremento_functions.desativando(itens[0],itens[1]) # Desativando 
+
+
+
+        # C006 - Importando a meta -- Como ativa
+        data_planilha_incremento = incremento_functions.get_data_meta_com_duplicatas(incremento_sheet_dados,9)# Pegando os valores da planilha
+        consulta = incremento_functions.criando_valors_para_insert(data_planilha_incremento)# Criando a consulta -- Parte dos VALUES
+        consulta_final = (incremento_functions.INSERT_INCREMENTO_META + consulta)# Juntando a consulta de VALUES com insert -- COMANDO INTO
+        itens = incremento_functions.execute_consulta(consulta_final)# Importando para o banco de dados
+        
+        importacao_nao_funcionou = itens[2] 
+        if importacao_nao_funcionou:
+            incremento_functions.desativando(itens[0],itens[1]) # Desativando a conexão sql
+            messages.add_message(
+                request,messages.
+                ERROR,
+                "Ops, algo deu errado. Contate o desenvolvedor, não conseguimos importar sua planilha para o banco de dados"
+                )
+            return render(request, 'planilhas/metas.html')
+        else:
+            itens[1].commit() # Confirmando as alterações    
+            incremento_functions.desativando(itens[0],itens[1]) # Desativando
+
+
+        
         # Deu tudo certo e estamos importando
         messages.add_message(request,messages.SUCCESS, "Importada com sucesso!")
         return render(request, 'planilhas/metas.html')
-
 
     return render(request, 'planilhas/metas.html')
 
@@ -469,6 +207,9 @@ def valor(request):
     return redirect('planilhas:HomePage') 
 
 def deflator(request):
-    messages.add_message(request,messages.INFO,"Estamos desenvolvendo esta página ainda... ")
-    return redirect('planilhas:HomePage') 
 
+    return render(request, 'planilhas/metas.html')
+        
+
+def meta_operador(request):
+    return render('request','')

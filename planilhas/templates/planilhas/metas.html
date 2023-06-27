@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="{% static 'planilhas/meta.css' %}">
     <link rel="stylesheet" href="{% static 'css/metaenvite.css' %}">
 
+    <script>
+        function abreLink(){
+            var path = "http://127.0.0.1:8000/"
+            var url = "{{planilha_incorreta_url}}"
+            var InicioRecorte = url.indexOf('incremento')
+          
+            window.open(path + url);
+            
+        }
+    </script>
+
 {% endblock 'css' %}
 
 
@@ -42,28 +53,13 @@
                         </select>
                     </div>
 
-                    {% if url %}
+                    {% if planilha_incorreta_url %}
+            
+                        <div class="d-flex align-itemns-center">
+                            <button onclick="abreLink()" class="btn btn-info mx-auto">Baixar planilha com erros</button>
+                        </div>                                    
+                    {% endif %}
 
-                    <div class="formexcel ">
-                        
-                        <div class="InputBox">
-    
-                            
-                            
-                            <div class="Input">
-                                <label class="file-upload">
-                                    <a href="{{url}}" download="Planilha_com_erros.xlsx">Baixar planilha</a>
-                                </label>
-                            </div>
-                            
-                            <div class="IconInput bg-primary">
-                                <i class="fa-sharp fa-solid fa-cloud-arrow-down"></i>
-                            </div>
-                            
-                        </div>
-                        
-                    </div>
-                {% endif %}
                     <hr>
                     
                     <!--Meta filha-->
