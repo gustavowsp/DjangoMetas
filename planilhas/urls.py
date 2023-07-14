@@ -15,4 +15,6 @@ urlpatterns = [
 
     path('valormeta/', views.valor, 
         name='MetaValor'),
+    path('meta-operadores/',views.meta_operador,
+         name='MetaOperadores')
 ]

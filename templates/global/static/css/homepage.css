@@ -114,7 +114,7 @@
     #Metas{        
         
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
     }
     #Metas section
     {
@@ -130,6 +130,7 @@
     /*Formatação da meta em si*/
     .meta-item
     {
+        margin: auto;
         width: 85%;
         margin: auto;
         background-color: #191919;
@@ -152,6 +153,9 @@
     }
     .meta-item.red{
         border-bottom:2px solid #EE3434 ;
+    }
+    .meta-item.green{
+        border-bottom:2px solid #6BBE49 ;
     }
     .meta-item h3{
         font-size: 1.5em;

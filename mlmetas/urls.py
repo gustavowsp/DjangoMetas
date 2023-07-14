@@ -23,6 +23,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('planilhas.urls')),
+    path('ajuda/', include('secao_ajuda.urls')),
 ]
 
 if settings.DEBUG:

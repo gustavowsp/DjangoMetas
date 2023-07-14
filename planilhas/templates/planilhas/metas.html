@@ -11,7 +11,7 @@
 
     <script>
         function abreLink(){
-            var path = "http://127.0.0.1:8000/"
+            var path = "{{path}}"
             var url = "{{planilha_incorreta_url}}"
             var InicioRecorte = url.indexOf('incremento')
           
@@ -40,16 +40,30 @@
                     
                     <div class="form-group">
                         <select name="carteira" class="form-control form-control-sm">
-                        
-                            <option value="alto_ticket">ALTO TICKET</option>
-                            <option value="comercial_imobiliario">COMERCIAL IMOBILIARIO JURIDICO</option>
-                            <option value="veiculos_amg">VEICULOS AMIGAVEL</option>
-                            <option value="veiculos_lp">VEICULOS LP</option>
-                            <option value="consorcio_imo_jur">CONSÓRSCIO IMOBILIARIO JUR</option>
-                            <option value="comercial_juri">COMERCIAL JURIDICO</option>
-                            <option value="credito_imobiliario_juamg">CREDITO IMOBILIARIO JURIDICO/AMIGÁVEL</option>
-                            <option value="veiculos_juri">VEICULOS JURIDICO</option>
+                           
+                            <option value="4">OPERACAO - BANCO TOYOTA	</option>
+                            <option value="6">OPERACAO - BANCO VOLKSWAGEN	</option>
+                            <option value="6">OPERACAO - BANCO VOLKSWAGEN - JURIDICO	</option>
+                            <option value="6">OPERACAO - BANCO VOLKSWAGEN - MIDDLE	</option>
+                            <option value="6">OPERACAO - BANCO VOLKSWAGEN - PF	</option>
+                            <option value="6">OPERACAO - BANCO VOLKSWAGEN - PJ	</option>
+                            <option value="31">OPERACAO - BRADESCO COMERCIAL - JURIDICO	</option>
                             
+                            <option value="16">OPERACAO - BRADESCO COMERCIAL IMOBILIARIO - JUR	</option>
+                            <option value="55">OPERACAO - BRADESCO COMERCIAL IMOBILIARIO - JUR	</option>
+
+                            <option value="27">OPERACAO - BRADESCO CONSORCIO - AMIGAVEL	</option>
+                            <option value="27">OPERACAO - BRADESCO CONSORCIO - JURIDICO	</option>
+                            <option value="27">OPERACAO - BRADESCO CONSORCIO IMOBILIARIO - JUR	</option>
+                            <option value="38">OPERACAO - BRADESCO CREDITO IMOBILIARIO	</option>
+                            <option value="16">OPERACAO - BRADESCO VEICULOS - AMIGAVEL	</option>
+                            <option value="55">OPERACAO - BRADESCO VEICULOS - JURIDICO	</option>
+                            <option value="16">OPERACAO - BRADESCO VEICULOS - LP	</option>
+                            <option value="46">OPERACAO - EMBRACON	</option>
+                            <option value="56">OPERACAO - EMBRACON	</option>
+                            <option value="18">OPERACAO - MAPFRE - HONDA	</option>
+                            <option value="18">OPERACAO - MAPFRE - HONDA QP	</option>
+                            <option value="37">OPERACAO - MAPFRE - SUZUKI	</option>
                         </select>
                     </div>
 
@@ -64,18 +78,19 @@
                     
                     <!--Meta filha-->
                     <div id="files">
-                        <h6>Insira a meta incremento metas</h6>
+                        <h6>Insira a sua meta abaixo</h6>
                         <div class="form-group file-transform">
                             <input type="file" id="meta_filha" name="meta_filha" class="form-control-file" >
                         </div>
+                        
 
-                        <!--Meta mãe-->
-                        <h6>Insira a meta de operadores</h6>
+                        <!--Meta mãe
+                        <h6>Insira a meta de operadores -- REMOVER</h6>
                         <div class="form-group file-transform">
                             
                             <input type="file" id="meta_mae" name="meta_mae" class="form-control-file" >
                         </div>
-                    </div>
+                    </div>-->
 
 
                     <button type="submit" class="btn btn-success btn-block">Enviar meta</button>

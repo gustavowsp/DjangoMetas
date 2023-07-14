@@ -3,7 +3,7 @@ import openpyxl
 import pyodbc
 from openpyxl.styles import PatternFill, Font
 import random
-
+import time
 
 INSERT_INCREMENTO_META = """INSERT INTO HOMOLOGACAO.DBO.ML_12062023_TESTE_METAINCREMENTO(
 									COMP,
@@ -17,44 +17,35 @@ INSERT_INCREMENTO_META = """INSERT INTO HOMOLOGACAO.DBO.ML_12062023_TESTE_METAIN
 									META_CINCO
 								)
 VALUES"""
-BUSCANDO_METAS_ATIVAS = """SELECT 
+QUERY_METATIVA_INCREMENTO_META = """SELECT 
     TOP 5 
 	* 
 FROM
 	HOMOLOGACAO.DBO.ML_12062023_TESTE_METAINCREMENTO
 WHERE 
 """
-ALTERANDO_META_ATIVA ="""UPDATE HOMOLOGACAO.DBO.ML_12062023_TESTE_METAINCREMENTO
+ALTERANDO_METATIVA_INCREMENTO_META ="""UPDATE HOMOLOGACAO.DBO.ML_12062023_TESTE_METAINCREMENTO
 	SET ATIVA = 'INATIVO'
 WHERE  
 """
 
+QUERY_META_OPERADORES = """
+SELECT 
+	*
+FROM 
+	HOMOLOGACAO.DBO.ML_07072023_TESTE_METASOPERADORES
+WHERE 
+	COMPETENCIA    =  '$VARIAVEL_COMPETENCIA$' AND
+	NOME_CREDOR  =  '$VARIAVEL_NOME_CREDOR$'
+"""
+
+
 def gerador_nome():
 
     def random_number():
-        return (random.randint(1,99))
+        return (random.randint(1,100))
     
-    def pegue_letra_aleatoria(maiuscula=False):
-        letras = [
-        'a','b','c','d','e','f','g',
-        'h','i','j','k','l','m',
-        'n','o','p','q','r','s','t',
-        'u','v','w','y','x','z'
-        ]
-        letras_maiusculas = [letra.upper() for letra in letras]
-
-        if maiuscula:
-            letras =  random.choice(letras_maiusculas) + random.choice(letras_maiusculas) 
-        else:
-            letras = random.choice(letras) + random.choice(letras)
-            
-        return letras
-    
-    def pegue_caractere_especial_aleatorio():
-        caracteres = ['!','@']
-        return random.choice(caracteres) + random.choice(caracteres)
-
-    nome =  f'{pegue_letra_aleatoria()}-{random_number()}-{pegue_letra_aleatoria(maiuscula=True)}-{pegue_caractere_especial_aleatorio()}'
+    nome =  f'-{random_number()}'
     return nome
 
 def desativando(cursor,cn):
@@ -145,25 +136,26 @@ def headers_is_corretct(plan,tipo):
                 'META_5'
             ],
             'operadores' : [
-                'COMPETENCIA',
+                'COMPETENCIA',	
                 'DATA_IMPORT',	
                 'QUEM_IMPORTOU',	
                 'COD_CRED',	
                 'NOME_CREDOR',	
-                'COD_FUNC',
-                'NOME_FUNCIONARIO',
-                'SUPERVISOR'	,
-                'FRENTE'	,
-                'META_QTDE'	 ,
+                'CENTRO_CUSTO',	
+                'COD_FUNC',	
+                'CPF_FUNC',	
+                'NOME_FUNCIONARIO',	'SUPERVISOR',	
+                'FRENTE',	
+                'META_QTDE',	 
                 'META_HONORARIOS', 	 
-                'META_REPASSE' 	 ,
-                'META_VALOR' 	 ,
-                'META_ATIVA' 	,
-                'TURNO'   	,
-                'ATUAÇÃO'	,
-                'ESTAGIO'	,
-                'DATA_INI'	,
-                'DATA_FIN'	,
+                'META_REPASSE', 	 
+                'META_VALOR', 	 
+                'META_ATIVA', 	
+                'TURNO',	
+                'ATUAÇÃO',	
+                'ESTAGIO',	
+                'DATA_INI',	
+                'DATA_FIN',	
                 'TIPO_MEDICAO',
             ],
             'deflatores' : [
@@ -187,7 +179,7 @@ def headers_is_corretct(plan,tipo):
         }
         max_cols = {
             'incremento' : 9,
-            'operadores' : 20,
+            'operadores' : 22,
             'deflatores': 14,
         }
         
@@ -349,10 +341,10 @@ def execute_consulta(consulta):
 
 def informacoes_corretas(
         request: str ,
-        carteira: str, 
-        meta_op: object, 
-        incremento_meta:object,
-        meta:str):
+        #carteira: str, 
+        meta:str,
+        meta_arquivo: object,
+        meta_op=None):
         
         """ 
         ## Recebimento
@@ -397,66 +389,71 @@ def informacoes_corretas(
         """
 
         # Verificando se carteira existe
-        if not verify_carteira(carteira): 
-            messages.add_message(request ,messages.ERROR, "Essa carteira não existe...")
-            return (request, 'planilhas/metas.html')
+        # if not verify_carteira(carteira): 
+        #     messages.add_message(request ,messages.ERROR, "Essa carteira não existe...")
+        #     return (request, 'planilhas/metas.html')
         
 
 
         # Os arquivos enviados, são realmentes planilhas excel?
-        if not is_excel(meta_op): 
-            messages.add_message(request,messages.ERROR, "Ops! O que foi enviado no campo meta operadores, não era uma planilha ")
-            return (request, 'planilhas/metas.html')
-        else:
-            meta_op = openpyxl.load_workbook(meta_op) # Abrindo a planilha
-        
-        if not is_excel(incremento_meta):
+        """if meta != 'operadores':
+            if not is_excel(meta_op): 
+                messages.add_message(request,messages.ERROR, "Ops! O que foi enviado no campo meta operadores, não era uma planilha ")
+                return (request, 'planilhas/metas.html')
+            else:
+                meta_op = openpyxl.load_workbook(meta_op) # Abrindo a planilha
+            """
+        if not is_excel(meta_arquivo):
             messages.add_message(request,messages.ERROR, "Ops! O que foi enviado no campo incremento meta, não era uma planilha ")
             return (request, 'planilhas/metas.html')
         else:
-            incremento_meta = openpyxl.load_workbook(incremento_meta)
+            meta_arquivo = openpyxl.load_workbook(meta_arquivo)
 
 
 
         # Verificando se a página de dados existe
-        if not sheet_exists(meta_op):
+        """if meta != 'operadores':
+            if not sheet_exists(meta_op):
+                messages.add_message(
+                    request,
+                    messages.ERROR, 
+                    "Ops! a página 'dados' na planilha meta operadores, não pode ser encontrada. Baixe nosso layout de metas e insira os dados!")
+                return (request, 'planilhas/metas.html')
+            else:
+                meta_op_dados = meta_op['Dados']
+            """
+        if not sheet_exists(meta_arquivo):
             messages.add_message(
                 request,
                 messages.ERROR, 
-                "Ops! a página 'dados' na planilha meta operadores, não pode ser encontrada. Baixe nosso layout de metas e insira os dados!")
+                "Ops! a página 'dados' na planilha, não pode ser encontrada. Baixe nosso layout de metas e insira os dados!")
             return (request, 'planilhas/metas.html')
         else:
-            meta_op_dados = meta_op['Dados']
+            meta_pagina_dados = meta_arquivo['Dados']
+
+
         
-        if not sheet_exists(incremento_meta):
-            messages.add_message(
-                request,
-                messages.ERROR, 
-                "Ops! a página 'dados' na planilha incremento meta, não pode ser encontrada. Baixe nosso layout de metas e insira os dados!")
-            return (request, 'planilhas/metas.html')
-        else:
-            incremento_meta_dados = incremento_meta['Dados']
-
-
-
         # Verificando se os cabecalhos são os esperados
-        if not headers_is_corretct(incremento_meta_dados,meta):
+        if not headers_is_corretct(meta_pagina_dados,meta):
             messages.add_message(
                 request,
                 messages.WARNING,
-                "Não foi possível encontrar o cabeçalho de informações, na aba de dados, na planilha incremento meta. Você está enviando a meta correta? Verifique!"
+                "Não foi possível encontrar o cabeçalho de informações, na aba de dados. Você está enviando a meta correta? Verifique!"
             )
             return (request, 'planilhas/metas.html')
 
-        if not headers_is_corretct(meta_op_dados,'operadores'):
-            messages.add_message(
-                request,
-                messages.WARNING,
-                "Não foi possível encontrar o cabeçalho de informações, na aba de dados, na planilha meta operadores. Você está enviando a meta correta? Verifique!"
-            )
-            return (request, 'planilhas/metas.html')
-
-        return (False, (incremento_meta_dados, meta_op_dados))
+        """ if meta != 'operadores':
+            if not headers_is_corretct(meta_op_dados,'operadores'):
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    "Não foi possível encontrar o cabeçalho de informações, na aba de dados, na planilha meta operadores. Você está enviando a meta correta? Verifique!"
+                )
+                return (request, 'planilhas/metas.html')
+        """
+        """if meta != 'operadores':
+            return (False, (meta_pagina_dados, meta_op_dados))"""
+        return (False, (meta_pagina_dados, None))
 
 def comparacao_dados(request : str,dados_incremento : dict ,dados_operadores : dict):
 
@@ -481,11 +478,13 @@ def comparacao_dados(request : str,dados_incremento : dict ,dados_operadores : d
         return new_values
 
 
-    competencia_incorreta = False if  dados_incremento['COMP'] == dados_operadores['COMPETENCIA'] else True
+    competencia_incorreta = False if  len(dados_incremento['COMP']) == 1 else True
     if competencia_incorreta:
         messages.add_message(request,messages.WARNING, "Há um erro na coluna de competências")
         return (request, 'planilhas/metas.html')   
     
+    print(dados_incremento['FRENTE'])
+    print(dados_operadores['FRENTE'])
     frente_incorreta = False if  dados_incremento['FRENTE'] == dados_operadores['FRENTE'] else True
     if frente_incorreta:
         messages.add_message(request,messages.WARNING, "Há um erro na coluna de frentes da planilha meta incremento.")
@@ -502,46 +501,52 @@ def comparacao_dados(request : str,dados_incremento : dict ,dados_operadores : d
         return (request, 'planilhas/metas.html') 
 
 def validando_nome_carteira(request:str, carteira: str, dados_da_planilha : list):
-    palavras_chaves = {
-        'alto_ticket':   [
-            'alt',
-            'tick'
-            ],
+    # palavras_chaves = {
+    #     'alto_ticket':   [
+    #         'alt',
+    #         'tick'
+    #         ],
 
-        'comercial_imobiliario':  [
-            'com,imo','rid'
-            ],
+    #     'comercial_imobiliario':  [
+    #         'com,imo','rid'
+    #         ],
 
-        'veiculos_amg': [
-            'vei','amig'
-            ],
+    #     'veiculos_amg': [
+    #         'vei','amig'
+    #         ],
 
-        'veiculos_lp':[
-            'vei','lp'
-            ],
+    #     'veiculos_lp':[
+    #         'vei','lp'
+    #         ],
 
-        'consorcio_imo_jur':  [
-            'consor','imo','jur'
-            ],
+    #     'consorcio_imo_jur':  [
+    #         'consor','imo','jur'
+    #         ],
 
-        'comercial_juri': [
-            'com','jur'
-            ],
+    #     'comercial_juri': [
+    #         'com','jur'
+    #         ],
 
-        'credito_imobiliario_juamg':  [
-            'cred','imo',(
-        'ju','amg'
-        )
-            ],
+    #     'credito_imobiliario_juamg':  [
+    #         'cred','imo',(
+    #     'ju','amg'
+    #     )
+    #         ],
 
-        'veiculos_juri': [
-            'vei',
-            'jur'
-        ]
-    }
+    #     'veiculos_juri': [
+    #         'vei',
+    #         'jur'
+    #     ]
+    # }
     
-    caracteres_chaves = palavras_chaves[carteira] # Pegando os caracteres chaves do nome da carteira.
+    #caracteres_chaves = palavras_chaves[carteira] # Pegando os caracteres chaves do nome da carteira.
+    
+    while True:
+        carteira = carteira.replace('-',' ')
 
+        if not '-' in carteira:
+            break
+    caracteres_chaves = carteira.split()
 
     for nome_carteira in dados_da_planilha['CARTEIRA']:
         # pegando cada nome de carteira existente na planilha
@@ -660,7 +665,7 @@ def existe_valores_incorretos(colunas : tuple):
                     if type(celula) != int:
                         return True
 
-def criando_valors_para_insert(valores):
+def criando_valors_para_insert(valores,coluna_maxima):
             """
             Essa função cria a consulta que irá inserir valores no banco de dados.
 
@@ -671,7 +676,7 @@ def criando_valors_para_insert(valores):
 
             linhas_existentes_planilha =len(valores)
             linha_atual = 0
-
+            fim_consulta = False
             for row in valores:
                 consulta += ' ( '
 
@@ -679,7 +684,12 @@ def criando_valors_para_insert(valores):
                 for cell in row:
 
                     # Adicionando o valor na consulta
-                    if type(cell) == str:
+                    if cell == None:
+                        fim_consulta = True
+                        continue
+                    if type(cell) == str or "datetime.datetime" in str(type(cell)):
+                        if "datetime.datetime" in str(type(cell)):
+                            cell = str(cell)
                         consulta += "'"
                         consulta += cell
                         consulta += "'"
@@ -687,12 +697,15 @@ def criando_valors_para_insert(valores):
                         consulta += str(cell)
                     
                     celula_atual += 1
-                    if celula_atual < 9:
+                    if celula_atual < coluna_maxima:
                         consulta += ', '
                 
                 linha_atual += 1
-                if linha_atual < linhas_existentes_planilha:
+                if linha_atual < linhas_existentes_planilha and not fim_consulta:
                     consulta += ' ), '
+                elif fim_consulta:
+                    consulta = consulta[0:-5]
+                    return consulta
                 else:
                     consulta += ') '
             return consulta
@@ -707,27 +720,32 @@ def contar_linhas(pagina):
             linhas += 1
     return linhas + linhas_desconsideradas  
     
-def padronizando_nome_cartira(incremento_meta_dados,carteira,total_linhas):
+def padronizando_nome_cartira(
+        incremento_meta_dados,
+        #carteira,
+        nome_padrao_carteira,
+        total_linhas):
     coluna_nomecredor = incremento_meta_dados['B']
     coluna_tipo_meta = incremento_meta_dados['D']
 
 
-    nomes_padrao_carteiras = {
-    'alto_ticket'   :  'ALTO_TICKET_PADRAO',
+    # nomes_padrao_carteiras = {
+    # 'alto_ticket'   :  'ALTO_TICKET_PADRAO',
 
-    'comercial_imobiliario':  'COMERCIAL_IMOBILIARIO_PADRAO',
+    # 'comercial_imobiliario':  'COMERCIAL_IMOBILIARIO_PADRAO',
 
-    'veiculos_amg': 'VEICULOS_AMIGAVEL_PADRAO',
+    # 'veiculos_amg': 'VEICULOS_AMIGAVEL_PADRAO',
 
-    'veiculos_lp': 'VEICULOS_LP_PADRAO',
+    # 'veiculos_lp': 'VEICULOS_LP_PADRAO',
 
-    'consorcio_imo_jur': 'CONSORCIO_IMO_JURIDICO',
+    # 'consorcio_imo_jur': 'CONSORCIO_IMO_JURIDICO',
 
-    'comercial_juri': 'CONSORCIO_JURIDICO' ,
+    # 'comercial_juri': 'CONSORCIO_JURIDICO' ,
 
-    'credito_imobiliario_juamg':  'CREDITO_IMOBILIARIO_JUAMG',
-        }
-    nome_padrao = nomes_padrao_carteiras[carteira]
+    # 'credito_imobiliario_juamg':  'CREDITO_IMOBILIARIO_JUAMG',
+    #     }
+    
+    nome_padrao = nome_padrao_carteira
     
     linha = 1
     for celula_nome_carteira in coluna_nomecredor:

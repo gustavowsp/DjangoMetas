@@ -2,3 +2,6 @@ venv
 db.sqlite3
 .gitignore
 media/
+static_files/
+testezao.xlsx
+.gitignore
