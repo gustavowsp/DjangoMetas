@@ -121,7 +121,6 @@ def headers_is_corretct(plan,tipo):
         Essa função verifica se os cabeçalhos da meta existem, caso não existam, possívelmente estamos abrindo
         uma planilha errada, que possui uma aba nomeada DADOS.
         """
-
         header_plan = []
         headers_default = {
             'incremento' : [
@@ -170,20 +169,47 @@ def headers_is_corretct(plan,tipo):
                 'FALTAS_QTDE',	
                 'ADVERTENCIAS_QTDE',
                 'RECLAMAÇÕES_QTDE',	
-                'MONITORIA_NOTA',	
+                'MONITORIA_NOTA',
+                'SUSPENSAO_QTDE',	
                 'QUEM_VALIDOU',	
                 'DATA_VALIDAÇÃO'
             ],
-            'null' : [],
-        
+            'premio'     : [
+                'DATA_IMPORT',	
+                'COMP',	
+                'COD_CRED',	
+                'CARTEIRA',	
+                'FRENTE', 
+                'TIPO_META',	
+                'TIPO_MEDICAO',	
+                'CRITERIO_1',	
+                'VLR_PREMIO_1',	
+                'CRITERIO_2',	
+                'VLR_PREMIO_2',	
+                'CRITERIO_3',	
+                'VLR_PREMIO_3',	
+                'CRITERIO_4',	
+                'VLR_PREMIO_4',	
+                'CRITERIO_5',	
+                'VLR_PREMIO_5',	
+                'CRITERIO_6',	
+                'VLR_PREMIO_6',	
+                'CRITERIO_7',	
+                'VLR_PREMIO_7',	
+                'CRITERIO_8',	
+                'VLR_PREMIO_8'
+                ],
         }
         max_cols = {
             'incremento' : 9,
             'operadores' : 22,
-            'deflatores': 14,
+            'deflatores' : 15,
+            'premio'     : 23,
         }
         
         header_default = headers_default[tipo]
+        
+
         max_col = max_cols[tipo]
         
 
@@ -193,7 +219,6 @@ def headers_is_corretct(plan,tipo):
             for cell in row:
                 header_plan.append(cell.value)
 
-        
         return header_plan == header_default
 
 def get_data_meta_com_duplicatas(plan : object, max_col : int):
@@ -287,7 +312,6 @@ def recuperar_informacoes_unicas(plan : object , max_col : int):
 
         # Adicionando valores na key atual
         for cell in row:
-            
             # Se o valor da célula for o nome da coluna, pule o looping
             if cell.value == row[0].value:
                 continue
@@ -319,15 +343,20 @@ def execute_consulta(consulta):
     
     def conectando():
 
-        
-        
-        cn = pyodbc.connect(f'DRIVER={"SQL Server"};SERVER=10.10.5.31;DATABASE=METAS;UID=planejamento;PWD=pl@n1234')
+        server = '10.10.5.30'
+        database = 'METAS'
+        username='planejamento'
+        password= 'pl@n1234'
+        #cn = pyodbc.connect('DRIVER={"SQL Server"};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+        cn = pyodbc.connect(f'DRIVER={"SQL Server"};SERVER=10.10.5.30;DATABASE=HOMOLOGACAO;UID=planejamento;PWD=pl@n1234')
         
         cursor = cn.cursor()
         return (cursor,cn)
                 
-
-    cursor,cn = conectando()
+    try:
+        cursor,cn = conectando()
+    except:
+        return None, None, True
     # Executando uma consulta
     try:
         cursor.execute(consulta)
@@ -387,13 +416,6 @@ def informacoes_corretas(
         ->damos. Caso errada retornamos um erro informando o erro para o usuário, assim ele pode
         corrigir.
         """
-
-        # Verificando se carteira existe
-        # if not verify_carteira(carteira): 
-        #     messages.add_message(request ,messages.ERROR, "Essa carteira não existe...")
-        #     return (request, 'planilhas/metas.html')
-        
-
 
         # Os arquivos enviados, são realmentes planilhas excel?
         """if meta != 'operadores':
@@ -468,34 +490,37 @@ def comparacao_dados(request : str,dados_incremento : dict ,dados_operadores : d
     Retornamos dados necessários para renderizar a página com o erro.
     """
 
-
-    def formatando_tipo_medicao(valores : set):
-
-        new_values = set()
-        for valor in valores:
-            new_values.add(valor.replace('_',' - '))
-        
-        return new_values
-
-
     competencia_incorreta = False if  len(dados_incremento['COMP']) == 1 else True
     if competencia_incorreta:
         messages.add_message(request,messages.WARNING, "Há um erro na coluna de competências")
         return (request, 'planilhas/metas.html')   
     
-    print(dados_incremento['FRENTE'])
-    print(dados_operadores['FRENTE'])
-    frente_incorreta = False if  dados_incremento['FRENTE'] == dados_operadores['FRENTE'] else True
-    if frente_incorreta:
-        messages.add_message(request,messages.WARNING, "Há um erro na coluna de frentes da planilha meta incremento.")
+
+    for frente in dados_incremento['FRENTE']:
+        if frente not in dados_operadores['FRENTE']:
+            frente_incorreta_dois = True
+            break
+        else:
+            frente_incorreta_dois = False
+    
+    for frente in  dados_operadores['FRENTE']:
+        if frente not in dados_incremento['FRENTE']:
+            frente_incorreta = True
+            break
+        else:
+            frente_incorreta = False    
+
+    if frente_incorreta or frente_incorreta_dois:
+        messages.add_message(request,messages.WARNING, "Há um erro na coluna de frentes da planilha meta incremento ou a meta de operadores, deste mês e desta carteira, ainda não foi importada ou você não preencheu todas as frentes que estão presentes na meta de operadores")
         return (request, 'planilhas/metas.html')          
 
-    #carteira_incorreta = False if  dados_incremento['CARTEIRA'] == dados_operadores['NOME_CREDOR'] else True
-    #if carteira_incorreta:
-    #    messages.add_message(request,messages.WARNING, "O nome credor da planilha meta incremento está diferentes da meta operadores.")
-    #    return (request, 'planilhas/metas.html') 
+    for tipo_meta in dados_incremento['TIPO_META']:
+        if tipo_meta not in dados_operadores['TIPO_MEDICAO']:
+            tipometa_incorreta = True
+            break
+        else:
+            tipometa_incorreta = False
 
-    tipometa_incorreta = False if dados_incremento['TIPO_META'] == formatando_tipo_medicao(dados_operadores['TIPO_MEDICAO']) else True
     if tipometa_incorreta:
         messages.add_message(request,messages.WARNING, "O tipo de meta está difente da planilha de meta operadores")
         return (request, 'planilhas/metas.html') 
@@ -620,23 +645,19 @@ def formatando_planilha(request,sheet_metaincremento,dados_incremento, increment
         while True:
             try:
                 numero_aleatorio = pegue_um_numero_aleatorio()
-                print('Vou salvar')
                 incremento_meta_woorkbook.save(
                     #f'templates/global/planilhas/planilha_com_erro{numero_aleatorio}.xlsx'
                     f'asdas{numero_aleatorio}.xlsx'
                     )
-                print('Salvei')
                 nome_planilha_incorreta = f'planilha_com_erro{numero_aleatorio}.xlsx'
     
                 break
             except:
-                print('Deu erro')
-
+                ...
 
         contexto = {
             'url' : f'/media/{nome_planilha_incorreta}'
         }
-        print('Passei 10')
 
         return(
             request, 
@@ -754,14 +775,6 @@ def padronizando_nome_cartira(
 
         # Caso já esteja na linha 4, linha que começa a possuir dados
         if linha >=4:   
-            celula_tipo_meta = coluna_tipo_meta[linha-1]
-            
-            if 'repa' in celula_tipo_meta.value.lower():
-                nome_carteira += '_REPASSE'
-
-            elif 'hono' in celula_tipo_meta.value.lower(): 
-                nome_carteira += '_HO'
-
             celula_nome_carteira.value = nome_carteira
 
         linha += 1
@@ -785,12 +798,10 @@ def criando_query_meta_ativa(carteiras,competencia,consulta_base):
                 # Não é a última carteira
                 if carteira_adicionadas_consulta < total_carteiras:
                     consulta += f"CARTEIRA = '{carteira}' OR   "
-                    print('1')
 
                 # É a última carteira
                 elif carteira_adicionadas_consulta == total_carteiras:
                     consulta  += f"CARTEIRA = '{carteira}'   "
-                    print('2')
 
                 # É a última carteira, mas existem várias carteiras
                 if carteira_adicionadas_consulta == total_carteiras and total_carteiras >1:
@@ -802,11 +813,11 @@ def criando_query_meta_ativa(carteiras,competencia,consulta_base):
 
             return consulta
 
-def existem_linhas_excedentes(pagina):
+def existem_linhas_excedentes(pagina,max_col):
             
     linhas_em_cada_coluna = set()
     
-    for coluna in pagina.iter_cols(min_row=4,max_col=9):
+    for coluna in pagina.iter_cols(min_row=4,max_col=max_col):
         quantidade_linhas = 0
 
         for celula in coluna:

@@ -1,0 +1,68 @@
+
+#SearchBox{
+    background-image: url(dash.png);
+    text-align: center;
+    background-position: center;
+    background-size: cover;
+    height:360px ;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#SearchBox input{
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    height: 40px;
+    padding: 20px 10px;
+    width: 50%;
+    border: 0.5px solid rgba(0,0,0,0.2);
+    box-shadow: 0px 0px 4px 4px rgba(0,0,0,0.4);
+}
+#header{
+    position: relative;
+    top: -60px;
+}
+
+#duvidas{
+    position: relative;
+    top: -40px;
+}
+#duvidas .col-md-4{
+    margin-bottom: 40px;
+    padding-bottom: 40px
+}
+#duvidas .duvida{
+    margin: 0px 10px;
+    background-color: #1E1E1E;
+    border-radius: 6px;
+    box-shadow: 0px 0px 4px 4px rgba(0,0,0,0.4);
+    height: 240px;
+    text-align: center;
+}
+#duvidas .duvida .img-duvida{
+    overflow: hidden;
+    height: 70px;
+    border-radius: 6px 6px 0px 0px;
+    background-position: center;
+    background-size: cover;
+}
+#duvidas .duvida .img-duvida img{
+    width: 100%;
+}
+
+#duvidas .duvida h2{
+    margin: 20px;
+    margin-top: 10px;
+    font-size: 0.8em;
+}
+#duvidas .duvida p{
+    font-size: 0.7em;
+    line-height: 140%;
+    margin: 0px 15px;
+}
+#duvidas a{
+    text-decoration: none;
+    color: white;
+}

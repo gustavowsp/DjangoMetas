@@ -1,0 +1,147 @@
+#body{
+    background-color: #A1A2A6;
+}
+.container{
+    margin-top: 140px;
+}
+
+
+/*NAVBAR
+-----------------------------------*/
+#navbarNav{
+    font-size: 0.8em;
+    font-weight: 500;
+}
+.navbar-brand{
+    font-weight: 600;
+}
+#navbar{
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 1;
+    background-color: #A1A2A6;
+    box-shadow: 5px 2px 4px rgba(0, 0, 0, 0.1);
+}
+nav{
+    position: fixed;
+    top: 0px;
+}
+/*ARTIGO
+--------------------------------*/
+
+.imagem-box #imagem{
+/*    background-color: gray;*/
+    height: 260px;
+    border-radius: 20px;
+    overflow: hidden;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.imagem-box #imagem{
+    width: 100%;
+    box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.2);
+}
+
+.imagem-box .data small{
+    font-size: 0.6em;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+
+}
+
+#artigo #titulo{
+    font-weight: 700;
+    margin-bottom: 0px;
+    font-size: 1.6em;
+}
+#artigo #subtitulo {
+    font-size: 0.8em;
+    font-weight: 500;
+    opacity: 0.85;
+}
+.imagem-post{
+    overflow: hidden;
+    box-shadow: 2px 4px 8px 4px rgba(0, 0, 0, 0.15);
+    margin-bottom: 50px;
+    margin-top: 50px;
+    background-color: #b3b3b3;
+    padding: 8px;
+    border-radius: 6px;
+}
+.imagem-post img{
+    width: 100%;
+    border-radius: 2px;
+}
+#artigo header{
+    margin: 30px 0px;
+    margin-bottom: 50px;
+}
+#artigo section p{
+    font-size: 0.85em;
+    font-weight: 400;
+    text-align: justify;
+    line-height: 170%;    
+}
+
+
+
+#line{
+    background-color: rgba(0, 0, 0, 0.15);
+    height: 100%;
+    width: 2px;
+    border-radius: 10px;
+    margin: auto;
+}
+
+
+
+#conteudo #aside{
+    background-color: #dddddd2c;
+    border-radius: 20px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 1px 0px 4px 3px rgba(0, 0, 0, 0.2);
+
+    overflow-y: scroll;
+    height: 600px;
+
+}
+.post{
+    background-color: #e9ecf283;
+    height: 180px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    padding: 15px;
+}
+#aside .post h3{
+    font-size: 0.85em;
+    font-weight: bold;
+
+}
+#aside .post p{
+    font-size: 0.7em;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    opacity: 0.7;
+}
+
+
+#aside::-webkit-scrollbar {
+    border-radius: 40px;
+    width: 12px;               /* width of the entire scrollbar */
+  }
+  
+  #aside::-webkit-scrollbar-track {
+    background: #012e4000;        /* color of the tracking area */
+  }
+  
+  #aside::-webkit-scrollbar-thumb {
+    background-color: #FFFFFF;    /* color of the scroll thumb */
+    border-radius: 20px;       /* roundness of the scroll thumb */
+    border: 4.5px solid #012E40;  /* creates padding around scroll thumb */
+    height: 20px;
+  }

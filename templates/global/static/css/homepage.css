@@ -3,7 +3,9 @@
     letter-spacing: 1.5px;
 }
 
-
+html {
+    scroll-behavior: smooth;
+  }
 /*FORMATAÇÃO DA CAIXA INTRODUTÓRIA DA HOMEPAGE*/
 
 #BoxIntroduct img{
@@ -51,6 +53,10 @@
         box-shadow: 0px -5px 10px 1px rgba(0, 0, 0, .6);
         border-radius: 40px 40px 0px 0px;
         padding: 25px 0px;
+    }
+    #BallArrowLink{
+        text-decoration: none;
+        outline: none;
     }
     #BallArrow /*Bolinha que fica apontando para baixo no container de metas*/
     {

@@ -35,9 +35,9 @@
                     
                     <p>
                         Olá, caso você nunca tenha utilizado nosso software de importação de metas, acesse a central de ajuda. 
-                        Preparamos um conteúdo de aprendiza-lo por lá!
+                        Preparamos um conteúdo de aprendizado por lá!
                     </p>
-                    <a href="{% url 'planilhas:HomePage'%}" class="botão-vermelho">Como enviar metas</a>
+                    <a href="{% url 'secao_ajuda:artigo' 5 %}" class="botão-vermelho">Como enviar metas</a>
                 </section>
 
             </div>
@@ -61,10 +61,11 @@
     <div class="container-fluid" id="MetaEnviteContainer">
 
         <!--Bolinha que aponta para baixo-->
-        
-        <div id="BallArrow" class="d-flex justify-content-center align-items-center">
-            <i  class="fa-solid fa-arrow-down"></i>
-        </div>
+        <a href="{% url 'planilhas:HomePage' %}#Metas" id="BallArrowLink">
+            <div id="BallArrow" class="d-flex justify-content-center align-items-center">
+                <i  class="fa-solid fa-arrow-down"></i>
+            </div>
+        </a>
         <!--Bolinha que aponta para baixo-->
 
 

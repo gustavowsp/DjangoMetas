@@ -1,0 +1,107 @@
+{% extends 'global/base.html' %}
+{% load static %}
+
+{% block 'title' %}Importador De Metas{% endblock 'title' %}teste
+
+
+
+{% block 'css' %}
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+    <link rel="stylesheet" href="{% static 'planilhas/metas-download.css' %}">
+
+    <script>
+        function abreLink(){
+            var path = "{{path}}"
+            var url = "{{planilha_incorreta_url}}"
+            var InicioRecorte = url.indexOf('incremento')
+          
+            window.open(path + url);
+            
+        }
+    </script>
+
+{% endblock 'css' %}
+
+
+{% block 'body' %}
+
+    
+<div class="container">
+        
+
+
+    <div class="row" id="initial-text">
+
+        <div class="col-md-8 col-12">
+            <h1>
+                Suas planilhas em nossos 
+                <span class="red-text">
+                    Layouts!
+                </span> 
+            </h1>
+        </div>
+        <div class="col-md-4 col-12" id="descricao">
+            <p>Abaixo estão planilhas no layout correto para o preenchimento, basta passar o mouse por cima das caixas. Você saberá o que fazer...</p>
+        </div>
+
+        
+    </div>
+    <div class="row" id="layouts">
+
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <div class="layout-meta">
+
+                <small class="number">01</small>
+                <h2>Meta de operadores</h2>
+
+                <div class="escondido">
+                    <p>Layout da planilha de deflatores, clique no botão abaixo para baixa-la.</p>
+                    <a href="http://127.0.0.1:8000/media/planilhas/layout_meta_op_novo.xlsx">Baixar planilha</a>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <div class="layout-meta">
+
+                <small class="number">02</small>
+                <h2>Meta de deflatores</h2>
+
+                <div class="escondido">
+                    <p>Layout da planilha de deflatores, clique no botão abaixo para baixa-la.</p>
+                    <a href="http://127.0.0.1:8000/media/planilhas/layout_deflatores.xlsx">Baixar planilha</a>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <div class="layout-meta">
+
+                <small class="number">03</small>
+                <h2>Meta de valor prêmio</h2>
+
+                <div class="escondido">
+                    <p>Layout da planilha de deflatores, clique no botão abaixo para baixa-la.</p>
+                    <a href="http://127.0.0.1:8000/media/planilhas/layout_valopremio.xlsx">Baixar planilha</a>
+                </div>
+
+            </div>
+        </div>
+        <div class=" col-12 col-md-6 col-lg-4 col-xl-3">
+            <div class="layout-meta">
+
+                <small class="number">04</small>
+                <h2>Meta de incremento</h2>
+
+                <div class="escondido">
+                    <p>Layout da planilha de deflatores, clique no botão abaixo para baixa-la.</p>
+                    <a href="http://127.0.0.1:8000/media/planilhas/layout_metasincremento.xlsx">Baixar planilha</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+{% endblock 'body' %}

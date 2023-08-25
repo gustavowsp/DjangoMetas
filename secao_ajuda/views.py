@@ -5,7 +5,14 @@ from secao_ajuda.models import Artigo
     
 # Create your views here.
 def index(request):
-    return HttpResponse('Página inicial da seção de ajuda')
+
+    artigos = Artigo.objects.filter(em_destaque=True)
+
+    context = {
+        'artigos' : artigos
+    }
+
+    return render(request,'secao_ajuda/busca-artigo.html',context)
 
 def exibir_aritgo(request,id_artigo):
 
@@ -18,6 +25,11 @@ def exibir_aritgo(request,id_artigo):
     if not artigo:
         raise Http404('O usuário pesquisou um artigo inexistente no banco de dados')
 
+    artigos_em_destaque = Artigo.objects.all().filter(em_destaque=True).order_by('-id')
 
-    titulo_artigo = artigo.titulo_artigo
-    return HttpResponse(f'<h1 style="text-align: center; font-family: sans-serif; margin-top:150px;">{titulo_artigo}</h1>')
+    context = {
+        'artigo' : artigo,
+        'artigos_em_destaque' : artigos_em_destaque
+    }
+
+    return render(request,'secao_ajuda/artigo.html',context)

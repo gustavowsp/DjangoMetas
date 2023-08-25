@@ -1,0 +1,66 @@
+{% extends 'global/base.html' %}
+{% load static %}
+
+{% block 'title' %}Importador De Metas{% endblock 'title' %}teste
+
+
+
+{% block 'css' %}
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+    <link rel="stylesheet" href="{% static 'pageuser/loginpage.css' %}">
+{% endblock 'css' %}
+
+
+{% block 'body' %}
+
+
+
+    <div class="w-50 mx-auto mt-3 mb-3">
+        {%include 'global/partials/_messages.html'%}
+    </div>
+
+    {% if not user.is_authenticated %}
+        <div class="container">
+
+            <div id="form">
+                <h3 class="text-center text-white">Autenticação</h3>
+                
+                <form action="" method="post" >
+                    {% csrf_token %}
+                    <div class="">
+                        <label for="">CPF</label>
+                        <input 
+                        type="text" class="form-control" name="cpf"
+                        placeholder="Digite seu cpf sem pontuação, ex:111111111">
+                    </div>
+
+                    {% comment %} <div class="">
+                        <label for="">Data de nascimento</label>
+                        <input 
+                        type="password" class="form-control" name="dt-nascimento"
+                        placeholder="Digite sua data de nascimento, como: 19092006">
+                    </div> {% endcomment %}
+
+                    <div id="btnn">
+                        <button type="submit" class="btn btn-danger btn-sm mt-4 text-center">Autenticar</button>
+                    </div>
+
+                </form> 
+
+            </div>
+
+        </div>
+    {%else %}
+    <div class="container text-center">
+        <h2 class="mt-3 mb-5">Você está Autenticado</h2>
+
+        <a href="{% url 'pagina_usuario:sair' %}" class="btn btn-sm btn-outline-info">Sair e ficar off-line</a>
+
+
+    </div>
+    {% endif %}
+
+
+
+
+{% endblock 'body' %}

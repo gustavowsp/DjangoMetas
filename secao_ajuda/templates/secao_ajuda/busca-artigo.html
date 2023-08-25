@@ -1,0 +1,67 @@
+{% extends 'global/base.html' %}
+{% load static %}
+
+{% block 'title' %}Artigo{% endblock 'title' %}
+
+
+
+{% block 'css' %}
+    <link rel="stylesheet" href="{% static 'secao_ajuda/search.css' %}">
+
+{% endblock 'css' %}
+
+
+{% block 'body' %}
+
+
+    <div class="container-fluid no-gutters">
+        <div id="SearchBox" >
+
+            <div id="header" class=" w-100">
+                <h1>
+                    Central de ajudas M.I.S <br>
+                    Informações e  tutoriais básicos:
+                </h1>
+                <form >
+                    <input type="text" placeholder="Escreva sua dúvida">
+                </form>
+            </div>
+
+        </div>
+    </div>
+    <div class="container">
+
+        <div id="duvidas" class="row">
+            
+
+            {% for artigo in artigos  %}
+                <div class="col-lg-4 col-12">
+                    <a href="{%url 'secao_ajuda:artigo' artigo.id%}">
+                        <div class="duvida">
+                            
+                            <div class="img-duvida" id="{{artigo.capa_artigo.url}}" >
+                            </div>
+
+                            <h2>{{artigo.titulo_artigo}}</h2>
+                            <p>{{artigo.descricao_artigo}}</p>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+            
+  
+
+        </div>
+    </div>
+<script>
+    const artigos = document.getElementsByClassName('img-duvida')
+    const quantidadeArtigos = artigos.length
+
+
+    for(i=0 ; quantidadeArtigos > i; i++){
+        const url = "url('" + artigos[i].id + "')"
+        artigos[i].style.backgroundImage = url
+
+    }
+</script>
+{% endblock 'body' %}

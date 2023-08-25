@@ -1,0 +1,130 @@
+{% extends 'global/base_vazia.html' %}
+{% load static %}
+
+{% block 'title' %}Artigo{% endblock 'title' %}
+
+
+
+{% block 'css' %}
+    <link rel="stylesheet" href="{% static 'secao_ajuda/artigo.css' %}">
+
+{% endblock 'css' %}
+
+
+{% block 'body' %}
+
+
+
+    <div id="navbar">
+        <nav class="navbar navbar-expand-lg navbar-light ">
+            <a class="navbar-brand" href="{% url 'planilhas:HomePage'  %}">M.I.S Planjamento</a>
+            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav mx-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'planilhas:Layouts'%}">Layouts</a>
+                </li>
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'secao_ajuda:home' %}">Ajuda</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'planilhas:HomePage'  %}#Metas">Enviar metas</a>
+                </li>
+
+            </ul>
+
+            </div>
+        
+        </nav>
+    </div>
+ 
+
+    <div class="container">
+
+        <!-- Conteúdos -->
+        <div class="row" id="conteudo">
+
+            <article class="col-md-8 col-12" id="artigo">
+
+                <div class="imagem-box">
+                    <div id="imagem">
+                        
+                    </div>
+                    <div class="data">
+                        <small>Postado em {{artigo.data_publicacao}}</small>
+                    </div>
+                </div>
+
+                <header >
+                    <h1 id="titulo">{{artigo.titulo_artigo}}</h1>
+                    <span id="subtitulo">{{artigo.descricao_artigo  }}</span>
+                </header>
+
+                <section>
+                    {% if artigo.primeiro_texto %}
+                        <p>{{artigo.primeiro_texto}}</p>
+                    {% endif %}
+
+                    {% if artigo.primeira_imagem %}
+                        <div class="imagem-post">
+                            <img src="{{artigo.primeira_imagem.url}}" alt="">
+                        </div>
+                    {% endif %}
+
+                    {% if artigo.segundo_texto %}
+                        <p>{{artigo.segundo_texto}}</p>
+                    {% endif %}
+
+
+                    {% if artigo.segunda_imagem %}
+                    <div class="imagem-post">
+                        <img src="{{artigo.segunda_imagem.url}}" alt="">
+                    </div>
+                {% endif %}
+
+                </section>
+
+            </article>
+
+            <div class="col-1 p-1 d-none d-lg-block ">
+                <div id="line"></div>
+            </div>
+
+            <aside class="col-lg-3 col-md-4 d-none d-md-block  p-0">
+
+                <div id="aside">
+
+                    {% for artigo in artigos_em_destaque  %}
+                        <div class="post">
+                            <a href="{% url 'secao_ajuda:artigo' artigo.id %}">
+                                <h3>{{artigo.titulo_artigo}}</h3>
+                            </a>
+                            <p>{{artigo.descricao_artigo}}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </aside>
+
+        </div>
+        <!-- Conteúdos -->
+
+    </div>
+    
+
+    <script>
+        document.getElementById('imagem').style.backgroundImage = "url('{{artigo.capa_artigo.url}}')"
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="vendor/js/bootstrap.min.js"></script>
+    
+{% endblock 'body' %}

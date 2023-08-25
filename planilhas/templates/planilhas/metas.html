@@ -40,8 +40,13 @@
                     
                     <div class="form-group">
                         <select name="carteira" class="form-control form-control-sm">
-                           
-                            <option value="4">OPERACAO - BANCO TOYOTA	</option>
+                            
+
+                            {% for carteira in carteiras  %}
+                                <option value="{{carteira.cod_cred}};{{carteira.nome_cred_padrao}}"> {{carteira.nome_carteira}}	</option>
+                            {% endfor %}
+
+                            {% comment %} <option value="4">OPERACAO - BANCO TOYOTA	</option>
                             <option value="6">OPERACAO - BANCO VOLKSWAGEN	</option>
                             <option value="6">OPERACAO - BANCO VOLKSWAGEN - JURIDICO	</option>
                             <option value="6">OPERACAO - BANCO VOLKSWAGEN - MIDDLE	</option>
@@ -63,7 +68,7 @@
                             <option value="56">OPERACAO - EMBRACON	</option>
                             <option value="18">OPERACAO - MAPFRE - HONDA	</option>
                             <option value="18">OPERACAO - MAPFRE - HONDA QP	</option>
-                            <option value="37">OPERACAO - MAPFRE - SUZUKI	</option>
+                            <option value="37">OPERACAO - MAPFRE - SUZUKI	</option> {% endcomment %}
                         </select>
                     </div>
 

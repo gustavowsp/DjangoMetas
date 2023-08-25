@@ -1,0 +1,90 @@
+
+
+#BodyBg{
+    background: linear-gradient(194deg, rgba(13,13,13,1) 0%, rgba(24,24,24,1) 70%);
+
+}
+
+
+/*Caixa do texto inicial*/
+#initial-text h1 /*Título da caixa de texto*/
+{
+    font-size: 3.6em;
+    font-weight: 900;
+}
+#initial-text #descricao{
+    display: flex;
+    justify-content: start  ;
+    align-items: center;
+
+    font-size: 0.8em;
+    font-weight: 600;
+    letter-spacing: 1px;
+    line-height: 200%;
+}
+
+
+.red-text{
+    color: #EE3434;
+}
+
+
+
+/*FORMATANDO CAIXA DE LAYOUTS DE META*/
+#layouts{
+    margin-top: 60px;
+}
+.layout-meta{
+    background-color: #1E1E1E;
+    border: 0.5px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 0px 4px 1px  rgba(0, 0, 0, 0.3);
+    width: 253px;
+    height: 253px;
+    margin: auto;
+    margin-bottom: 40px;
+
+    padding: 20px 25px;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    transition: 1.4s;
+    top: 0;
+}
+.layout-meta:hover{
+    height: 290px ;
+    top: -37px;
+    background-color: #EE3434;
+}
+
+.layout-meta small.number{
+    font-weight: bold;
+    font-size: 0.8em; 
+
+}
+
+.layout-meta h2{
+    font-size: 1.2em;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.layout-meta:hover .escondido{
+    bottom: 20px;
+    transition-delay: 1s;
+
+}
+.layout-meta .escondido{
+    position: absolute;
+    bottom: -120px;
+    transition-delay: 0s;
+    transition-duration: 1s;
+}
+.layout-meta .escondido p{
+    font-size: 0.75em;
+    font-weight: 500;
+}
+.layout-meta .escondido a{
+    font-size: 0.75em;
+    font-weight: bold;
+    color:white;
+}

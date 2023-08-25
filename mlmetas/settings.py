@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from django.contrib import messages
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9mgzlln!(ml^#fx_5nf27g!@z^47xpr(@zg++)o^^b1v--dek4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1'
@@ -36,6 +37,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'planilhas',
     'secao_ajuda',
+    'pageuser',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -150,3 +152,9 @@ MESSAGE_TAGS = {
     messages.WARNING : "alert alert-warning",
     messages.ERROR : "alert alert-danger",
 }
+
+
+try:
+    from mlmetas.localsettings import *
+except ImportError as error:
+    ...

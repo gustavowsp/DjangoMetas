@@ -21,10 +21,13 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('planilhas.urls')),
+    path('mis-admin/', admin.site.urls),
     path('ajuda/', include('secao_ajuda.urls')),
+    path('dash/', include('pageuser.urls')),
+    path('', include('planilhas.urls')),
 ]
 
 if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
