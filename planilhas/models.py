@@ -16,3 +16,15 @@ class Carteira(models.Model):
     
     def __str__(self):
         return self.nome_carteira
+
+
+class PasswordDataBase(models.Model):
+        
+        server = models.CharField(max_length=255)
+        database = models.CharField(max_length=255)
+        username = models.CharField(max_length=255)
+        password = models.CharField(max_length=255)
+        # server = '10.10.5.30'
+        # database = 'HOMOLOGACAO'
+        # username ='planejamento'
+        # password = 'pl@n1234'

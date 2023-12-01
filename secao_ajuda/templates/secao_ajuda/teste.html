@@ -1,0 +1,67 @@
+{% extends 'global/base.html' %}
+{% load static %}
+
+{% block 'css' %}
+<link rel="stylesheet" href="{% static 'secao_ajuda/teste.css'%}">
+{{form.media}}
+
+{% endblock 'css' %}
+
+
+{% block 'body' %}
+
+
+
+
+    <form method="post" method="{{form_action}}" enctype="multipart/form-data" class="container-fluid"> 
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-12 col-md-6">
+
+
+                <div class="form-box">
+                    {% for field in form %}
+                        {% if field.id_for_label == 'id_conteudo_artigo'%}
+                            <div class="input-box blog_content">
+                                <label for="{{field.id_for_label}}">{{field.label}}</label>
+                                {{field|safe}}
+                            </div>
+                        {%endif%}
+                    {% endfor %}    
+                </div>
+
+
+            </div>
+            
+            <div class="col-12 col-md-6">
+                <div class="form-box">
+
+                    {% for field in form%}
+                        {% if field.id_for_label != 'id_conteudo_artigo' and field.id_for_label != 'id_descricao_artigo' %}
+
+                            <div class="input-box">
+                                <label for="{{field.id_for_label}}">{{field.label}}</label>
+                                {{field}}
+                            </div>
+                        {%elif field.id_for_label == 'id_descricao_artigo'%}
+                        <div class="input-box descricao">
+                            <label for="{{field.id_for_label}}">{{field.label}}</label>
+                            {{field}}
+                        </div>
+                        {%endif%}
+
+                    {%endfor%}
+                    
+                    <div class="input-box text-center">
+                        <button type="submit" class="btn btn-success">Criar novo post</button>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </form>
+
+
+
+{% endblock 'body' %}
+
+

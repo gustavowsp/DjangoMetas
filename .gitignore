@@ -1,8 +1,9 @@
 .gitignore
 static_files/
 testezao.xlsx
+teste.py
 mlmetas/localsettings.py
-
+testando_ideias/
 # Django #
 *.log
 *.pot

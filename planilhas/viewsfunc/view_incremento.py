@@ -1,4 +1,5 @@
 from django.contrib import messages
+from planilhas.models import PasswordDataBase
 import openpyxl
 import pyodbc
 from openpyxl.styles import PatternFill, Font
@@ -343,14 +344,16 @@ def execute_consulta(consulta):
     
     def conectando():
 
-        server = '10.10.5.30'
-        database = 'METAS'
-        username='planejamento'
-        password= 'pl@n1234'
-        #cn = pyodbc.connect('DRIVER={"SQL Server"};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
-        cn = pyodbc.connect(f'DRIVER={"SQL Server"};SERVER=10.10.5.30;DATABASE=HOMOLOGACAO;UID=planejamento;PWD=pl@n1234')
+        data_connection_database = PasswordDataBase.objects.all()[0]
+
+        server      = data_connection_database.server
+        database    = data_connection_database.database
+        username    = data_connection_database.username
+        password    = data_connection_database.password
         
+        cn = pyodbc.connect(f'DRIVER={"SQL Server"};SERVER={server};DATABASE={database};UID={username};PWD={password}')
         cursor = cn.cursor()
+
         return (cursor,cn)
                 
     try:
@@ -495,7 +498,8 @@ def comparacao_dados(request : str,dados_incremento : dict ,dados_operadores : d
         messages.add_message(request,messages.WARNING, "Há um erro na coluna de competências")
         return (request, 'planilhas/metas.html')   
     
-
+    frente_incorreta_dois = False
+    frente_incorreta = False
     for frente in dados_incremento['FRENTE']:
         if frente not in dados_operadores['FRENTE']:
             frente_incorreta_dois = True
@@ -509,6 +513,8 @@ def comparacao_dados(request : str,dados_incremento : dict ,dados_operadores : d
             break
         else:
             frente_incorreta = False    
+    
+
 
     if frente_incorreta or frente_incorreta_dois:
         messages.add_message(request,messages.WARNING, "Há um erro na coluna de frentes da planilha meta incremento ou a meta de operadores, deste mês e desta carteira, ainda não foi importada ou você não preencheu todas as frentes que estão presentes na meta de operadores")

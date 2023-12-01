@@ -6,6 +6,7 @@ import planilhas.viewsfunc.view_valorpremio as utils_premio
 
 # Models utilizados
 from planilhas.models import Carteira
+from pageuser.models import AcoesRealizadas,Atividade
 
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
@@ -42,6 +43,22 @@ def formatar_cpf(cpf):
 
     return cpf
 
+def inserir_acao(acao_realizada : object, usuario : object) -> None:
+    """
+    ## Parâmetros
+    Os parâmetros que devem ser enviados são
+    ##### Ação realizada
+    O nome da ação que o usuario está realizando. Enviado como primeiro parâmetro
+    ##### Usuário
+    O usuário que está realizando esta ação, a instância dele.
+    """
+
+    nova_acao = AcoesRealizadas()
+
+    nova_acao.usuario = usuario
+    nova_acao.acao = acao_realizada
+    
+    nova_acao.save()
 
 # Create your views here.
 def index(request):
@@ -62,6 +79,7 @@ def incremento(request):
         'carteiras' :  todas_carteiras
     }
 
+    # esse pedaço faz
     if request.method == 'POST':
         
 
@@ -219,9 +237,7 @@ def incremento(request):
 
         dados_operadores = dados_teste_operador
 
-       
-        for tipo_medicao in incremento_sheet_dados.iter_rows(min_row=4,max_col=4, min_col=4):
-            print(tipo_medicao[0].value)
+
 
         # C004
         # Comparando os valores de cada coluna chave com a planilha de metas operadores
@@ -356,8 +372,12 @@ def incremento(request):
         
         # Deu tudo certo e estamos importando
         messages.add_message(request,messages.SUCCESS, "Importada com sucesso!")
+        
+        acao_realizada = Atividade.objects.get(id=4)
+        inserir_acao(acao_realizada, request.user)
+        
         return render(request, 'planilhas/metas.html',context)
-
+    
     return render(request, 'planilhas/metas.html',context)
 
 def valor(request):
@@ -367,6 +387,7 @@ def valor(request):
         messages.add_message(request,messages.INFO,"É necessário estar autenticado para começar o processo de envio de metas!!")
         return redirect('pagina_usuario:login')
     
+
     context = {
         'carteiras' : Carteira.objects.filter(ativa=True)
     }
@@ -443,7 +464,7 @@ def valor(request):
                     return render(request,'planilhas/metas.html',context)
                 
         ### COMEÇO ALGORITIMO
-
+        print('Começo algoritimo')
         competencias = set()
         for linha_da_coll_comp in meta_sheet_dados.iter_rows(min_col=2,max_col=2, min_row=4):
             
@@ -485,20 +506,19 @@ def valor(request):
             if not '-' in palavras_chaves_carteira:
                 palavras_chaves_carteira = palavras_chaves_carteira.split()
                 break
-            
+        print('Começando a validar cod_cred')   
         # Validando o cod_cred da planilha
         for celula in meta_sheet_dados.iter_rows(min_row=4, min_col=3, max_col=3):
             
             valor_celula = str(celula[0].value).strip()
             if valor_celula == 'None':
                 break
-
-            time.sleep(5)
             if not valor_celula ==  cod_cred_carteira:
 
                 messages.add_message(request,messages.ERROR, 'Você selecionou a carteira incorreta... O cod cred selecionado é diferente da planiha')
                 return render(request, 'planilhas/metas.html',context)
 
+        print('Validou cod cred')
         # Validando nome da carteira
         for celula in meta_sheet_dados.iter_rows(min_row=4, min_col=4, max_col=4):
             valor_celula = celula[0].value
@@ -519,6 +539,7 @@ def valor(request):
         data_atual = str(datetime.now())
         data_atual = data_atual[:-3]
 
+        print('Max col 1')
         for linha in meta_sheet_dados.iter_rows(min_row=4, min_col=1, max_col=1):
             valor_celula = linha[0].value
 
@@ -526,7 +547,7 @@ def valor(request):
                 break
             linha[0].value = data_atual
 
-        
+        print('Iterando a coluna c')
         # Iterando a coluna C-3 COD CRED
         for celula in meta_sheet_dados.iter_rows(min_row=4,min_col=3,max_col=3):
             
@@ -675,8 +696,6 @@ def valor(request):
 
         
         dados = incremento_functions.get_data_meta_com_duplicatas(meta_sheet_dados,max_col=23)
-        print(dados)
-        print('#'*50) 
         valores_insert = incremento_functions.criando_valors_para_insert(dados,23)
         insert_consulta = utils_premio.INSERT_META
         consulta = insert_consulta + valores_insert
@@ -700,6 +719,8 @@ def valor(request):
 
         messages.add_message(request,messages.SUCCESS,'Meta importada com sucesso')
         
+        acao_realizada = Atividade.objects.get(id=3)
+        inserir_acao(acao_realizada, request.user)
 
     return render(request,'planilhas/metas.html',context)
 
@@ -1083,7 +1104,9 @@ def deflator(request):
                 incremento_functions.desativando(itens[0],itens[1]) # Desativando
 
         messages.add_message(request,messages.SUCCESS, 'Meta importada com sucesso')
-    
+        acao_realizada = Atividade.objects.get(id=1)
+        inserir_acao(acao_realizada, request.user)
+
     return render(request, 'planilhas/metas.html',context)     
 
 def meta_operador(request):
@@ -1299,7 +1322,6 @@ def meta_operador(request):
                 # Verificando se o cod func da planilha existe no banco de dados
                 if cod_func == cod_func_query:
                     cod_func_correto = True
-                    print('O código está correto')
                     break
 
                 else:
@@ -1410,7 +1432,6 @@ def meta_operador(request):
                 break
             
             if not tipo_medicao in colunas:
-                print(tipo_medicao)
                 messages.add_message(request,messages.WARNING, 'O tipo de medição está incorreto.')  
                 return render(request, 'planilhas/metas.html',context) 
               
@@ -1623,6 +1644,11 @@ def meta_operador(request):
                 incremento_functions.desativando(itens[0],itens[1]) # Desativando
 
         messages.add_message(request,messages.SUCCESS,'Meta importada com sucesso!')
+
+        acao_realizada = Atividade.objects.get(id=2)
+        inserir_acao(acao_realizada, request.user)
+        
         return render(request, 'planilhas/metas.html',context)
     
     return render(request, 'planilhas/metas.html',context)# TODO: Criando context -- meta de operadores -- alterar
+

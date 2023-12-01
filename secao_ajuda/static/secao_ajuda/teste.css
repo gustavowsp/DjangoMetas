@@ -1,0 +1,47 @@
+.form-box{
+    width: 96%;
+    margin: auto;
+    height: 100%;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.input-box{
+    margin-bottom: 25px;
+}
+.input-box label{
+    display: block;
+    font-weight: bold;
+    text-transform: capitalize;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+.input-box input,.input-box textarea{
+    width: 100%;
+    border: none;
+    padding: 10px 5px;
+    border-radius: 6px;
+    outline: unset;
+    color: white;
+    font-family: monospace;
+    background-color: #232323;
+    border: 1px solid #3F3F3F;
+    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.4);
+}
+
+.input-box.descricao input{
+    display: block;
+    height: 160px ;
+    text-overflow: ellipsis;
+
+}
+.input-box.blog_content label{
+    text-align: center;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+.input-box.blog_content textarea{
+    height: 500px;
+}

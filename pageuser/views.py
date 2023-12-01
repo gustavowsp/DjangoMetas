@@ -8,6 +8,99 @@ from django.contrib import messages
 from pageuser.utils import consultas
 from planilhas.viewsfunc import view_incremento as incremento_functions
 import time
+from pageuser.models import AcoesRealizadas,Atividade
+import calendar
+import datetime
+
+
+def discover_month() -> str:
+
+    # Descobrindo o mês atual
+    mes = datetime.datetime.now().month
+
+    meses_existentes = {
+        1 : 'janeiro',
+        2 : 'fevereiro',
+        3 : 'março',
+        4 : 'abril',
+        5 : 'maio',
+        6 : 'junho',    
+        7 : 'julho',
+        8 : 'agosto',
+        9 : 'setembro',
+        10 : 'outubro',
+        11 : 'novembro',
+        12 : 'dezembro',
+    }
+    
+    return meses_existentes[mes].capitalize()
+
+def dias_do_mes() -> list:
+
+    # Descobrindo data atual
+    data_atual = datetime.datetime.now()
+    mes, ano = data_atual.month, data_atual.year
+    dia_atual = data_atual.day
+
+
+    # Descobrindo o total de dias da data atual
+    monthRange = calendar.monthrange(ano,mes)
+    
+    # Criando uma lista com os dias
+    dias = {
+        1 : {}
+    }
+
+    for dia in range(monthRange[1]):
+        
+
+        if dia+1 == dia_atual:
+            dias[dia+1] = {
+                'tag' : 'dia_atual'
+            }
+        else:   
+            dias[dia+1] = {}
+
+    return dias
+
+def get_ativades_nao_feitas(usuario):  
+
+    def data_inicio_fim_mes() -> tuple:
+
+        # Descobrindo o mês atual
+        data = datetime.datetime.now()
+        year,month = data.year, data.month
+        dia = calendar.monthrange(year,month)[1]
+
+        data_inicio = datetime.date(year,month,1)
+        data_fim = datetime.date(year,month,dia)
+
+        return data_inicio,data_fim
+
+    atividades_existentes = Atividade.objects.all()
+
+    data_inicio, data_fim = data_inicio_fim_mes()
+    acoes_feitas = AcoesRealizadas.objects.filter(data_realizacao__range=(data_inicio, data_fim), usuario=usuario)
+
+    acoes_nao_feitas = []
+
+    for atividade in atividades_existentes:
+        
+        atividade_foi_realizada = False
+
+        # Passando em cada ação
+        for acao_feita in acoes_feitas:
+            
+            # Encontrou ação parou o for de cima
+            if acao_feita.acao == atividade:
+                atividade_foi_realizada = True        
+                break
+        
+        if not atividade_foi_realizada:
+            acoes_nao_feitas.append(atividade)
+
+    return acoes_nao_feitas
+
 
 def criando_condicao_in(dados:list) -> str:
 
@@ -47,8 +140,6 @@ def registro(request):
     if request.method == 'GET':
         return render(request, 'pageuser/registrar.html')
 
-    
-    
 
     usuarios_registrados = User.objects.all()
     cpfs_de_users_registrados = list()
@@ -72,7 +163,6 @@ def registro(request):
     itens = incremento_functions.execute_consulta(consulta)
     query_falhou = itens[2]
 
-    print('Começando a query...')
     if query_falhou:
         incremento_functions.desativando(itens[0],itens[1]) # Desativando a conexão sql
         messages.add_message(
@@ -93,8 +183,7 @@ def registro(request):
 
         nome = tupla_com_dados[0].split(' ')
         primeiro_nome = nome[0].capitalize()
-        ultimo_nome = nome[1].capitalize()
-
+        ultimo_nome = ' '.join(nome[1:]).capitalize()
         cpf_user = tupla_com_dados[1]
                 
         novo_usuario.username = cpf_user
@@ -140,9 +229,40 @@ def login(request):
 
     if user:
         login_django(request,user)
+        messages.success(request,'Você foi autenticado!')
+        return redirect('pagina_usuario:dashboard')
+    
     else:
         messages.add_message(request,messages.ERROR,'Usuário ou senha não existem...')
         return render(request, 'pageuser/login.html')
 
     messages.add_message(request,messages.SUCCESS,'Você está autenticado!!')
     return render(request, 'pageuser/login.html')
+
+def dashboard(request):
+
+    if not request.user.is_authenticated:
+        messages.add_message(request,messages.INFO,'Você precisa estar autenticado para entrar em sua dashboard')
+        return redirect('pagina_usuario:login')
+    
+    usuario = request.user
+
+    acoes_feitas = AcoesRealizadas.objects.filter(usuario=usuario).order_by('-data_realizacao')
+
+    print(dias_do_mes())
+
+    context = {
+        'acoes_feitas' : acoes_feitas,
+        'usuario' : usuario,
+        'calendario' : {
+            'mes' : discover_month(),
+            'dias_do_mes' : dias_do_mes()
+        },
+        'pendencias' : get_ativades_nao_feitas(usuario)
+    }
+
+    return render(
+        request,
+        'pageuser/dashuser.html',
+        context
+    )    

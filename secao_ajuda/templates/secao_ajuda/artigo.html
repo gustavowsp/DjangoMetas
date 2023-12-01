@@ -63,33 +63,9 @@
                     </div>
                 </div>
 
-                <header >
-                    <h1 id="titulo">{{artigo.titulo_artigo}}</h1>
-                    <span id="subtitulo">{{artigo.descricao_artigo  }}</span>
-                </header>
 
-                <section>
-                    {% if artigo.primeiro_texto %}
-                        <p>{{artigo.primeiro_texto}}</p>
-                    {% endif %}
-
-                    {% if artigo.primeira_imagem %}
-                        <div class="imagem-post">
-                            <img src="{{artigo.primeira_imagem.url}}" alt="">
-                        </div>
-                    {% endif %}
-
-                    {% if artigo.segundo_texto %}
-                        <p>{{artigo.segundo_texto}}</p>
-                    {% endif %}
-
-
-                    {% if artigo.segunda_imagem %}
-                    <div class="imagem-post">
-                        <img src="{{artigo.segunda_imagem.url}}" alt="">
-                    </div>
-                {% endif %}
-
+                <section id="content">
+                    {{artigo.conteudo_artigo|safe}}
                 </section>
 
             </article>
@@ -116,6 +92,9 @@
 
         </div>
         <!-- Conteúdos -->
+
+
+        <a href="{% url 'secao_ajuda:update_artigo' artigo.id %} ">Update</a>
 
     </div>
     

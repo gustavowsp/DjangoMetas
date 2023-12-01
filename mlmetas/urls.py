@@ -25,6 +25,7 @@ urlpatterns = [
     path('ajuda/', include('secao_ajuda.urls')),
     path('dash/', include('pageuser.urls')),
     path('', include('planilhas.urls')),
+    path('summernote/', include('django_summernote.urls')),
 ]
 
 if settings.DEBUG:

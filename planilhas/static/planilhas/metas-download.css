@@ -48,12 +48,14 @@
     overflow: hidden;
     position: relative;
     transition: 1.4s;
-    top: 0;
+    top: 0px;
 }
 .layout-meta:hover{
     height: 290px ;
     top: -37px;
     background-color: #EE3434;
+    transition: 1s;
+
 }
 
 .layout-meta small.number{
@@ -70,14 +72,13 @@
 
 .layout-meta:hover .escondido{
     bottom: 20px;
-    transition-delay: 1s;
-
+    transition-delay: 0.5s;
 }
 .layout-meta .escondido{
     position: absolute;
     bottom: -120px;
-    transition-delay: 0s;
     transition-duration: 1s;
+    transition-delay: 0s;
 }
 .layout-meta .escondido p{
     font-size: 0.75em;

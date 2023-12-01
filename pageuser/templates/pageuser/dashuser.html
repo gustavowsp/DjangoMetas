@@ -1,0 +1,108 @@
+{% extends 'global/base.html' %}
+{% load static %}
+
+{% block 'title' %}Importador De Metas{% endblock 'title' %}teste
+
+
+
+{% block 'css' %}
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+    <link rel="stylesheet" href="{% static 'pageuser/dash.css' %}">
+{% endblock 'css' %}
+
+
+{% block 'body' %}
+
+
+
+    <div class="container">
+        <div id="DashBox">
+
+            <h4 style="margin-bottom: 15px;">Olá <span id="NomeUser">{{usuario.first_name}} {{usuario.last_name}}</span>, Seja bem vindo(a)</h4>
+            <a href="{% url 'planilhas:HomePage'%}" class="btn btn-sm btn-outline-info mb-5">Clique aqui para ir enviar metas</a>
+
+
+            <div class="w-50 mx-auto mt-3 mb-3">
+                {%include 'global/partials/_messages.html'%}
+            </div>
+
+            <div class="row">
+
+                <div class="col-12 col-lg-6">
+                    <div id="AcoesFeitasBox" class="dash-bg">
+                        <h6>Ações Realizadas</h6>
+                        {% if acoes_feitas %}
+                        <div class="table-responsive">
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome ação</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for acao in acoes_feitas  %}
+                                        <tr>
+                                            <td>{{acao.id}}</td>
+                                            <td>
+                                                <span class="nome-acao">{{acao.acao}}</span>
+                                            </td>
+                                            <td>
+                                                <span class="data-acao">{{acao.data_realizacao}}</span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+   
+                                </tbody>
+
+                            </table>
+                        </div>
+                        {% else %}
+                        <h4 class="text-center mt-5 pt-5">Sem ações para exibir...</h4>
+                        {%endif%}
+
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div id="PendenciasBox" class="dash-bg">
+                        {% if pendencias %}
+                            
+                            {% for pendencia in pendencias  %}
+                                <div class="atividadebox">
+                                    <div class="icon-atividade atividade"><i class="fa-solid fa-xmark"></i></div>
+                                    <div class="atividade">{{pendencia}}</div>
+                                </div>
+                            {% endfor %}
+                        {%else%}
+
+                        <h4 class="text-center mt-5">Tudo feito este mês!!</h4>
+                        {% endif %}
+
+                    </div>
+
+                    <div id="CalendarioBox" class="dash-bg">
+
+                        <div id="mes">
+                            {{calendario.mes}} 
+                        </div>
+
+                        <div id="dias">
+                            {% for dia,values in calendario.dias_do_mes.items %}
+                                <span class="{{values.tag}}">{{dia}}</span>
+                            {%endfor%}
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+{% endblock 'body' %}

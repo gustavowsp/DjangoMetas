@@ -1,0 +1,195 @@
+#DashBox{
+    margin-top: 50px;
+}
+#DashBox h4{
+    font-weight: 600;
+    opacity: 0.7;
+    margin-bottom: 50px;
+}
+#NomeUser {
+    font-weight: 800;
+    text-transform: capitalize;
+}
+
+
+#AcoesFeitasBox{
+    height: 680px;
+}
+
+#PendenciasBox{
+    margin-bottom: 40px;
+}
+#CalendarioBox,#PendenciasBox{
+    height: 320px;
+    
+}
+.dash-bg{
+    border-radius: 6px;
+    background-color: #252525;
+    box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.8);
+    width: 100%;
+
+    box-sizing: border-box;
+    padding: 20px 15px;
+}
+
+#AcoesFeitasBox{
+    overflow-y: scroll;
+    margin-bottom: 100px ;
+}
+#AcoesFeitasBox h6{
+    margin-bottom: 20px;
+    font-size: 1.2em;
+}
+#AcoesFeitasBox table{
+    position: relative;
+    width: 100%;
+}
+#AcoesFeitasBox tr{
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    cursor: pointer;
+}
+#AcoesFeitasBox th,#AcoesFeitasBox td{
+    padding: 15px;
+}
+
+#AcoesFeitasBox thead{
+    width: 100%;
+}
+#AcoesFeitasBox thead tr{
+    background-color: #EE3434;
+    border: none ;
+}
+#AcoesFeitasBox tbody tr{
+    transition: 0.3s;
+
+}
+#AcoesFeitasBox .data-acao{
+    font-size: 0.8em;
+}
+#AcoesFeitasBox tbody tr:hover{
+    color: #fc6363;
+    font-weight: 600;
+    background-color: #333333;
+}
+
+#AcoesFeitasBox td{
+font-weight: 600;
+font-size: 0.9em;
+}
+
+
+#AcoesFeitasBox::-webkit-scrollbar,#CalendarioBox::-webkit-scrollbar {
+    border-radius: 100px;
+    width: 10px;               /* width of the entire scrollbar */
+}
+  
+#AcoesFeitasBox::-webkit-scrollbar-track,#CalendarioBox::-webkit-scrollbar-track {
+background: #333333;        /* color of the tracking area */
+}
+  
+#AcoesFeitasBox::-webkit-scrollbar-thumb,#CalendarioBox::-webkit-scrollbar-thumb {
+
+background-color: #ee3434c2;    /* color of the scroll thumb */
+border-radius: 20px;       /* roundness of the scroll thumb */
+border: 1px solid rgba(255, 255, 255, 0.3);  /* creates padding around scroll thumb */
+}
+#AcoesFeitasBox{
+    position: relative;
+}
+
+@media (max-width: 992px) { 
+
+    #AcoesFeitasBox{
+        margin-bottom: 60px;
+    }
+
+}
+
+
+
+
+/*Formatando calendário*/
+#mes{
+    height: 55px;
+    padding: 10px;
+    padding-bottom: 20px;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: bold;
+    background-color: #1a1a1a;
+}
+#CalendarioBox{
+    overflow: hidden;
+    overflow-y: scroll;
+    padding: 0px;
+}
+#CalendarioBox #dias{
+    height: 100%;
+    margin: auto;
+    padding: 0px 25px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+#CalendarioBox #dias span{
+    background-color: #404040;
+    border-radius: 42.5%;
+    transition: 0.5s;
+
+    margin: 0px 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.2);
+
+    width: 40px;
+    height: 40px;
+}
+#CalendarioBox #dias span:hover{
+    background-color: #595959;
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.4);
+
+}
+
+.dia_atual{
+    background-color: #007566 !important;
+    font-weight: bold;
+}
+
+
+/*Formatando caixa de pendências*/
+.atividadebox {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.atividadebox .atividade{
+    width: 500px;
+    padding: 8px 40px;
+    margin: 12px;
+    border-radius: 8px;
+    background-color: #404040;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-weight: 600;
+    height: 50px;
+
+    font-size: 0.9em;
+}
+.icon-atividade i{
+    font-size: 1.4em;
+    color: #EE3434;
+}
+.icon-atividade{
+    width: 50px !important;
+    padding: 8px 20px !important;
+    height: 50px;
+}
